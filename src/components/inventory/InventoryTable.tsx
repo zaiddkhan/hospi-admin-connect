@@ -101,6 +101,15 @@ const InventoryTable = () => {
     }
   };
   
+  // Function to get the appropriate progress bar className based on status
+  const getProgressColorClass = (status: string) => {
+    switch (status) {
+      case "critical": return "bg-error-500";
+      case "low-stock": return "bg-warning-500";
+      default: return "bg-success-500";
+    }
+  };
+  
   const handleReorder = (id: number) => {
     // Placeholder for backend integration
     toast.success("Reorder initiated successfully");
@@ -150,17 +159,12 @@ const InventoryTable = () => {
                       <span>{item.stock}</span>
                       <span>{item.threshold} (min)</span>
                     </div>
-                    <Progress
-                      value={getStockPercentage(item.stock, item.threshold)}
-                      className="h-2"
-                      indicatorClassName={
-                        item.status === "critical"
-                          ? "bg-error-500"
-                          : item.status === "low-stock"
-                          ? "bg-warning-500"
-                          : "bg-success-500"
-                      }
-                    />
+                    <div className="relative">
+                      <Progress
+                        value={getStockPercentage(item.stock, item.threshold)}
+                        className={`h-2 ${getProgressColorClass(item.status)}`}
+                      />
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>₹{item.unitPrice.toFixed(2)}</TableCell>
