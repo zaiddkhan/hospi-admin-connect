@@ -1,18 +1,29 @@
+// src/hooks/useAppointments.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { appointmentAPI, Appointment, AppointmentFormData } from '@/services/appointmentService';
+import { appointmentAPI } from '@/services/appointmentService';
 import { toast } from 'sonner';
+
+// Type definitions
+interface AppointmentFormData {
+  patient_id: string;
+  date: string;
+  time: string;
+  type: string;
+  notes?: string;
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+}
 
 // Hook to fetch today's appointments
 export const useTodayAppointments = () => {
   return useQuery({
     queryKey: ['appointments', 'today'],
-    queryFn: appointmentAPI.getTodayAppointments,
+    queryFn: () => appointmentAPI.getTodayAppointments(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
 // Hook to fetch appointments with optional filters
-export const useAppointments = (filters?: { date?: string; status?: string }) => {
+export const useAppointments = (filters?: { date?: string; status?: string; patient_id?: string }) => {
   return useQuery({
     queryKey: ['appointments', filters],
     queryFn: () => appointmentAPI.getAppointments(filters),
@@ -39,6 +50,7 @@ export const useAppointment = (id?: string) => {
     queryFn: () => id ? appointmentAPI.getAppointmentById(id) : Promise.resolve(null),
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!id, // Only run if ID is provided
+    retry: 1, // Only retry once on error
   });
 };
 
@@ -67,7 +79,7 @@ export const useCreateAppointment = () => {
   
   return useMutation({
     mutationFn: (data: AppointmentFormData) => appointmentAPI.createAppointment(data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success('Appointment scheduled successfully');
       
       // Invalidate relevant queries to refresh the data
@@ -75,7 +87,8 @@ export const useCreateAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to schedule appointment');
+      console.error('Error creating appointment:', error);
+      toast.error(error?.response?.data?.message || 'Failed to schedule appointment');
     },
   });
 };
@@ -85,8 +98,8 @@ export const useUpdateAppointment = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<AppointmentFormData> }) => 
-      appointmentAPI.updateAppointment(id, data),
+    mutationFn: ({ id, appointmentData }: { id: string; appointmentData: Partial<AppointmentFormData> }) => 
+      appointmentAPI.updateAppointment(id, appointmentData),
     onSuccess: (data, variables) => {
       toast.success('Appointment updated successfully');
       
@@ -96,7 +109,8 @@ export const useUpdateAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update appointment');
+      console.error('Error updating appointment:', error);
+      toast.error(error?.response?.data?.message || 'Failed to update appointment');
     },
   });
 };
@@ -115,7 +129,8 @@ export const useDeleteAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete appointment');
+      console.error('Error deleting appointment:', error);
+      toast.error(error?.response?.data?.message || 'Failed to delete appointment');
     },
   });
 };
@@ -134,7 +149,8 @@ export const useConfirmAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ['appointment', data.id] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to confirm appointment');
+      console.error('Error confirming appointment:', error);
+      toast.error(error?.response?.data?.message || 'Failed to confirm appointment');
     },
   });
 };
@@ -153,7 +169,8 @@ export const useCancelAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ['appointment', data.id] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to cancel appointment');
+      console.error('Error cancelling appointment:', error);
+      toast.error(error?.response?.data?.message || 'Failed to cancel appointment');
     },
   });
 };
@@ -172,7 +189,8 @@ export const useCompleteAppointment = () => {
       queryClient.invalidateQueries({ queryKey: ['appointment', data.id] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update appointment status');
+      console.error('Error completing appointment:', error);
+      toast.error(error?.response?.data?.message || 'Failed to update appointment status');
     },
   });
 };
