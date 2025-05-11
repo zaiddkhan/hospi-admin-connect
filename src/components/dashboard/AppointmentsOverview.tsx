@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -10,21 +9,42 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from "recharts";
-
-// Mock data for appointments
-const appointmentData = [
-  { day: "Mon", appointments: 6 },
-  { day: "Tue", appointments: 8 },
-  { day: "Wed", appointments: 12 },
-  { day: "Thu", appointments: 7 },
-  { day: "Fri", appointments: 10 },
-  { day: "Sat", appointments: 15 },
-  { day: "Sun", appointments: 4 },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppointmentsOverview } from "@/hooks/useDashboard";
 
 const AppointmentsOverview = () => {
+  const { data: appointmentData, isLoading, error } = useAppointmentsOverview();
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Appointments Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[240px] w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !appointmentData) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Appointments Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[240px] w-full flex items-center justify-center">
+            <p className="text-muted-foreground">Failed to load appointment data</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-3">
       <CardHeader>
         <CardTitle>Appointments Overview</CardTitle>
       </CardHeader>
@@ -53,7 +73,7 @@ const AppointmentsOverview = () => {
                 axisLine={false}
                 tickFormatter={(value) => `${value}`}
               />
-              <Tooltip />
+              <Tooltip formatter={(value) => [value, 'Appointments']} />
               <Area
                 type="monotone"
                 dataKey="appointments"

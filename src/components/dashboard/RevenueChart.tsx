@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -8,23 +7,44 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
-
-// Mock data for revenue
-const revenueData = [
-  { month: "Jan", revenue: 35000 },
-  { month: "Feb", revenue: 42000 },
-  { month: "Mar", revenue: 38000 },
-  { month: "Apr", revenue: 45000 },
-  { month: "May", revenue: 50000 },
-  { month: "Jun", revenue: 48000 },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRevenueChart } from "@/hooks/useDashboard";
 
 const RevenueChart = () => {
+  const { data: revenueData, isLoading, error } = useRevenueChart();
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Monthly Revenue</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[240px] w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !revenueData) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Monthly Revenue</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[240px] w-full flex items-center justify-center">
+            <p className="text-muted-foreground">Failed to load revenue data</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-3">
       <CardHeader>
         <CardTitle>Monthly Revenue</CardTitle>
       </CardHeader>
@@ -47,7 +67,7 @@ const RevenueChart = () => {
                 axisLine={false}
                 tickFormatter={(value) => `₹${value / 1000}k`}
               />
-              <Tooltip formatter={(value) => [`₹${value}`, "Revenue"]} />
+              <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, "Revenue"]} />
               <Bar dataKey="revenue" fill="#4CD964" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
