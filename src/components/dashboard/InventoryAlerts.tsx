@@ -36,24 +36,24 @@ const inventoryAlerts = [
 const InventoryAlerts = () => {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Inventory Alerts</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
+        <CardTitle className="text-lg">Inventory Alerts</CardTitle>
         <Button variant="outline" size="sm">
           View All
         </Button>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="px-4 pb-4 pt-0">
+        <div className="space-y-3">
           {inventoryAlerts.map((item) => (
-            <div key={item.id} className="space-y-2">
+            <div key={item.id} className="space-y-1">
               <div className="flex items-center justify-between">
-                <p className="font-medium">{item.name}</p>
+                <p className="font-medium text-sm">{item.name}</p>
                 <Badge
                   variant="outline"
                   className={
                     item.status === "critical"
-                      ? "border-error-500 text-error-500"
-                      : "border-warning-500 text-warning-500"
+                      ? "border-error-500 text-error-500 text-xs"
+                      : "border-warning-500 text-warning-500 text-xs"
                   }
                 >
                   {item.status === "critical" ? "Critical" : "Low Stock"}
@@ -61,7 +61,7 @@ const InventoryAlerts = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Progress value={item.percentage} className="h-2" />
-                <span className="text-xs text-muted-foreground w-20">
+                <span className="text-xs text-muted-foreground w-16">
                   {item.stock}/{item.threshold}
                 </span>
               </div>

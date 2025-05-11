@@ -40,22 +40,22 @@ const upcomingAppointments = [
 const UpcomingAppointments = () => {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Today's Appointments</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
+        <CardTitle className="text-lg">Today's Appointments</CardTitle>
         <Button variant="outline" size="sm">
           View All
         </Button>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="px-4 pb-4 pt-0">
+        <div className="space-y-2">
           {upcomingAppointments.map((appointment) => (
             <div
               key={appointment.id}
-              className="flex items-center justify-between p-3 rounded-md bg-secondary/50"
+              className="flex items-center justify-between p-2 rounded-md bg-secondary/50"
             >
-              <div className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarFallback className="bg-primary/10 text-primary">
+              <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary/10 text-primary text-sm">
                     {appointment.patientName
                       .split(" ")
                       .map((n) => n[0])
@@ -63,7 +63,7 @@ const UpcomingAppointments = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{appointment.patientName}</p>
+                  <p className="font-medium text-sm">{appointment.patientName}</p>
                   <p className="text-xs text-muted-foreground">
                     {appointment.time} • {appointment.type}
                   </p>

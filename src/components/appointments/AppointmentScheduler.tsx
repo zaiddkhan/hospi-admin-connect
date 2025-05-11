@@ -45,14 +45,14 @@ const AppointmentScheduler = () => {
   };
 
   return (
-    <Card className="col-span-1 lg:col-span-2">
-      <CardHeader>
-        <CardTitle>Schedule Appointment</CardTitle>
+    <Card className="col-span-1 lg:col-span-1">
+      <CardHeader className="py-3 px-4">
+        <CardTitle className="text-lg">Schedule Appointment</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="patient">Patient Name</Label>
+      <CardContent className="px-4 pb-4 pt-0">
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label htmlFor="patient" className="text-sm">Patient Name</Label>
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               <Input
@@ -60,18 +60,19 @@ const AppointmentScheduler = () => {
                 placeholder="Enter patient name"
                 value={patient}
                 onChange={(e) => setPatient(e.target.value)}
+                className="h-9"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
+          <div className="space-y-1">
+            <Label htmlFor="date" className="text-sm">Date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal h-9",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -85,18 +86,18 @@ const AppointmentScheduler = () => {
                   selected={date}
                   onSelect={setDate}
                   initialFocus
-                  className="p-3 pointer-events-auto"
+                  className="p-2 pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="time">Time</Label>
+          <div className="space-y-1">
+            <Label htmlFor="time" className="text-sm">Time</Label>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <Select value={time} onValueChange={setTime}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full h-9">
                   <SelectValue placeholder="Select time" />
                 </SelectTrigger>
                 <SelectContent>
@@ -121,10 +122,10 @@ const AppointmentScheduler = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="type">Appointment Type</Label>
+          <div className="space-y-1">
+            <Label htmlFor="type" className="text-sm">Appointment Type</Label>
             <Select value={appointmentType} onValueChange={setAppointmentType}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full h-9">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
@@ -138,8 +139,9 @@ const AppointmentScheduler = () => {
           </div>
 
           <Button 
-            className="w-full mt-4" 
+            className="w-full mt-3" 
             onClick={handleScheduleAppointment}
+            size="sm"
           >
             <Plus className="h-4 w-4 mr-2" /> Schedule Appointment
           </Button>

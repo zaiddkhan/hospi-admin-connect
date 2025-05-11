@@ -7,13 +7,13 @@ import AppointmentScheduler from "@/components/appointments/AppointmentScheduler
 const Appointments = () => {
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
           <h1 className="page-title">Appointments</h1>
           <p className="text-muted-foreground">Manage your schedule and appointments</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <AppointmentCalendar />
           <AppointmentScheduler />
         </div>

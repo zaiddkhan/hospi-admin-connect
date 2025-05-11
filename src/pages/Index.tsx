@@ -11,13 +11,13 @@ import InventoryAlerts from "@/components/dashboard/InventoryAlerts";
 const Index = () => {
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
           <h1 className="page-title">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, Dr. Rajeev!</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <StatCard
             title="Today's Appointments"
             value="12"
@@ -44,12 +44,12 @@ const Index = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <AppointmentsOverview />
           <RevenueChart />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <UpcomingAppointments />
           <InventoryAlerts />
         </div>

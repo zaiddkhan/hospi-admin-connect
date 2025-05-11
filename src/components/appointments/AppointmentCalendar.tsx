@@ -10,20 +10,20 @@ const AppointmentCalendar = () => {
   
   return (
     <Card className="col-span-1 lg:col-span-2">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Calendar</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
+        <CardTitle className="text-lg">Calendar</CardTitle>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" onClick={() => setDate(new Date())}>
             Today
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 pb-3 pt-0">
         <Calendar
           mode="single"
           selected={date}
           onSelect={setDate}
-          className="rounded-md border p-4 pointer-events-auto"
+          className="rounded-md border p-2 pointer-events-auto"
         />
       </CardContent>
     </Card>
