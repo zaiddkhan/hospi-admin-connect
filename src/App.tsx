@@ -10,6 +10,8 @@ import AppointmentDetail from "@/pages/AppointmentDetail";
 import NewAppointment from "@/pages/NewAppointment";
 import Communications from "@/pages/Communications";
 import Patients from "@/pages/Patients";
+import PatientDetail from "@/pages/PatientDetail";
+import NewPatient from "@/pages/NewPatient";
 import Billing from "@/pages/Billing";
 import Inventory from "@/pages/Inventory";
 import Analytics from "@/pages/Analytics";
@@ -79,9 +81,13 @@ const App = () => {
             <Route path="/appointments/:id" element={<ProtectedRoute><AppointmentDetail /></ProtectedRoute>} />
             <Route path="/appointments/:id/edit" element={<ProtectedRoute><AppointmentDetail /></ProtectedRoute>} />
             
+            {/* Patient routes */}
+            <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
+            <Route path="/patients/new" element={<ProtectedRoute><NewPatient /></ProtectedRoute>} />
+            <Route path="/patients/:id" element={<ProtectedRoute><PatientDetail /></ProtectedRoute>} />
+            
             {/* Other routes */}
             <Route path="/communications" element={<ProtectedRoute><Communications /></ProtectedRoute>} />
-            <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
             <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
             <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
