@@ -1,3 +1,4 @@
+
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { 
@@ -9,7 +10,8 @@ import {
   Package2, 
   Settings,
   Users,
-  Lightbulb // Added for insights
+  Lightbulb,
+  FileText // Added for consultations
 } from "lucide-react";
 import { 
   Sidebar, 
@@ -36,6 +38,12 @@ const NavLinks = [
     title: "Appointments", 
     icon: Calendar, 
     path: "/appointments" 
+  },
+  {
+    title: "Consultations",
+    icon: FileText,
+    path: "https://hospiagent.vercel.app/consultation/new",
+    external: true
   },
   { 
     title: "Communications", 
@@ -90,15 +98,27 @@ const AppSidebar = () => {
               {NavLinks.map((link) => (
                 <SidebarMenuItem key={link.path}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={link.path}
-                      className={({ isActive }) => 
-                        isActive ? "text-sidebar-primary" : "text-sidebar-foreground"
-                      }
-                    >
-                      <link.icon className="h-4 w-4" />
-                      <span>{link.title}</span>
-                    </NavLink>
+                    {link.external ? (
+                      <a 
+                        href={link.path} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-foreground hover:bg-sidebar-hover"
+                      >
+                        <link.icon className="h-4 w-4" />
+                        <span>{link.title}</span>
+                      </a>
+                    ) : (
+                      <NavLink 
+                        to={link.path}
+                        className={({ isActive }) => 
+                          isActive ? "text-sidebar-primary" : "text-sidebar-foreground"
+                        }
+                      >
+                        <link.icon className="h-4 w-4" />
+                        <span>{link.title}</span>
+                      </NavLink>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

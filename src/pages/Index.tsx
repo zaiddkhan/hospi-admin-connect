@@ -1,7 +1,8 @@
+
 import React from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import StatCard from "@/components/dashboard/StatCard";
-import { Calendar, Users, CreditCard, Clock } from "lucide-react";
+import { Calendar, Users, CreditCard, Clock, FileText } from "lucide-react";
 import AppointmentsOverview from "@/components/dashboard/AppointmentsOverview";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import UpcomingAppointments from "@/components/dashboard/UpcomingAppointments";
@@ -9,6 +10,8 @@ import InventoryAlerts from "@/components/dashboard/InventoryAlerts";
 import { useDashboardStats } from "@/hooks/useDashboard";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Index = () => {
   const { data: dashboardStats, isLoading, error } = useDashboardStats();
@@ -20,12 +23,22 @@ const Index = () => {
     }
   }, [error]);
 
+  const handleStartConsultation = () => {
+    window.open("https://hospiagent.vercel.app/consultation/new", "_blank");
+  };
+
   return (
     <AppLayout>
       <div className="space-y-3">
-        <div>
-          <h1 className="page-title">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Dr. Rajeev!</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="page-title">Dashboard</h1>
+            <p className="text-muted-foreground">Welcome back, Dr. Rajeev!</p>
+          </div>
+          <Button onClick={handleStartConsultation} className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            <span>Start New Consultation</span>
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

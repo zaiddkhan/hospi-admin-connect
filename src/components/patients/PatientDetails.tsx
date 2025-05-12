@@ -69,6 +69,13 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
     }
   };
 
+  // Handle starting consultation for this patient
+  const handleStartConsultation = () => {
+    if (patient) {
+      window.open(`https://hospiagent.vercel.app/consultation/${patient.id}`, "_blank");
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -228,9 +235,15 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Appointment History</h3>
-                <Button onClick={handleScheduleAppointment} size="sm">
-                  Schedule Appointment
-                </Button>
+                <div className="flex gap-2">
+                  <Button onClick={handleStartConsultation} size="sm" variant="outline">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Start Consultation
+                  </Button>
+                  <Button onClick={handleScheduleAppointment} size="sm">
+                    Schedule Appointment
+                  </Button>
+                </div>
               </div>
               
               {appointmentsError ? (
@@ -315,10 +328,16 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
       </CardContent>
       
       <CardFooter className="flex flex-wrap gap-2 justify-between">
-        <Button onClick={handleScheduleAppointment} variant="default">
-          <CheckCircle className="h-4 w-4 mr-2" />
-          Schedule Appointment
-        </Button>
+        <div className="space-x-2">
+          <Button onClick={handleScheduleAppointment} variant="default">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Schedule Appointment
+          </Button>
+          <Button onClick={handleStartConsultation} variant="outline">
+            <FileText className="h-4 w-4 mr-2" />
+            Start Consultation
+          </Button>
+        </div>
         
         <div className="space-x-2">
           <Button onClick={onEdit} variant="outline">

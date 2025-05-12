@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, FileText } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import AppointmentForm from "@/components/appointments/AppointmentForm";
 import { Button } from "@/components/ui/button";
@@ -80,6 +81,15 @@ const NewAppointment = () => {
     navigate("/appointments");
   };
   
+  // Start consultation instead of normal appointment
+  const handleStartConsultation = () => {
+    if (patientId) {
+      window.open(`https://hospiagent.vercel.app/consultation/${patientId}`, "_blank");
+    } else {
+      window.open("https://hospiagent.vercel.app/consultation/new", "_blank");
+    }
+  };
+  
   // Check if there are any loading or error states
   const isLoading = patientsLoading || patientLoading;
   const error = patientsError || patientError;
@@ -97,13 +107,23 @@ const NewAppointment = () => {
   return (
     <AppLayout>
       <div className="space-y-4">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center justify-between gap-2 mb-4">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={() => navigate("/appointments")}
           >
             <ChevronLeft className="h-4 w-4 mr-1" /> Back to Appointments
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleStartConsultation}
+            className="flex items-center gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            Start Online Consultation
           </Button>
         </div>
 
