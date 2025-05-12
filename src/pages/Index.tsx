@@ -1,8 +1,7 @@
-
 import React from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import StatCard from "@/components/dashboard/StatCard";
-import { Calendar, Users, CreditCard, Clock, FileText } from "lucide-react";
+import { Calendar, Users, CreditCard, Clock, FileText, Newspaper } from "lucide-react";
 import AppointmentsOverview from "@/components/dashboard/AppointmentsOverview";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import UpcomingAppointments from "@/components/dashboard/UpcomingAppointments";
@@ -26,6 +25,10 @@ const Index = () => {
   const handleStartConsultation = () => {
     window.open("https://hospiagent.vercel.app/consultation/new", "_blank");
   };
+  
+  const handleMedicalResearch = () => {
+    window.open("https://med-search-agent.vercel.app/", "_blank");
+  };
 
   return (
     <AppLayout>
@@ -35,10 +38,16 @@ const Index = () => {
             <h1 className="page-title">Dashboard</h1>
             <p className="text-muted-foreground">Welcome back, Dr. Rajeev!</p>
           </div>
-          <Button onClick={handleStartConsultation} className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            <span>Start New Consultation</span>
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={handleMedicalResearch} className="flex items-center gap-2" variant="outline">
+              <Newspaper className="h-4 w-4" />
+              <span>Research Hub</span>
+            </Button>
+            <Button onClick={handleStartConsultation} className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              <span>Start New Consultation</span>
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

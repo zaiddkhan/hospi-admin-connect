@@ -11,7 +11,8 @@ import {
   Settings,
   Users,
   Lightbulb,
-  FileText // Added for consultations
+  FileText,
+  Newspaper // Added for medical research
 } from "lucide-react";
 import { 
   Sidebar, 
@@ -43,6 +44,12 @@ const NavLinks = [
     title: "Consultations",
     icon: FileText,
     path: "https://hospiagent.vercel.app/consultation/new",
+    external: true
+  },
+  {
+    title: "Medical Research",
+    icon: Newspaper,
+    path: "https://med-search-agent.vercel.app/",
     external: true
   },
   { 
