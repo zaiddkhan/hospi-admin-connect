@@ -157,7 +157,7 @@ const NewAppointment = () => {
               patients={patients}
               isLoading={isLoading}
               isSubmitting={createAppointment.isPending}
-              appointment={appointmentDefaults}
+              appointment={null}
             />
           )}
         </div>

@@ -20,7 +20,7 @@ const EnhancedInsights = () => {
     isLoading, 
     error,
     refetch 
-  } = useInsights({}, refreshKey);
+  } = useInsights({});
   
   // Mutation hook for generating new insights
   const generateInsights = useGenerateInsights();

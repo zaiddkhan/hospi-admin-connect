@@ -25,9 +25,8 @@ const patientGenderData = [
 ];
 
 const appointmentTypeData = [
-  { name: "Consultation", value: 40 },
-  { name: "Follow-up", value: 30 },
-  { name: "Procedure", value: 15 },
+  { name: "Consultation", value: 50 },
+  { name: "Follow-up", value: 35 },
   { name: "Emergency", value: 10 },
   { name: "Other", value: 5 },
 ];
@@ -115,6 +114,7 @@ const PatientAnalytics = () => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
+                
                   <Tooltip
                     formatter={(value, name) => [`${value}%`, name]}
                   />

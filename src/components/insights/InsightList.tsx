@@ -206,7 +206,7 @@ const InsightsList: React.FC<InsightsListProps> = ({
                 <div className="mt-3 p-3 bg-muted rounded-md">
                   <p className="text-sm font-medium">Changes to be made:</p>
                   <ul className="text-sm list-disc pl-5 mt-1 space-y-1">
-                    {selectedInsight.implementation_details.map((detail, idx) => (
+                    {selectedInsight?.implementation_details?.map((detail, idx) => (
                       <li key={idx}>{detail}</li>
                     ))}
                   </ul>
