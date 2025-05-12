@@ -167,7 +167,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="All-status">All Status</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="confirmed">Confirmed</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
@@ -179,7 +179,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="All_sypes">All Types</SelectItem>
                 <SelectItem value="consultation">Consultation</SelectItem>
                 <SelectItem value="follow-up">Follow-up</SelectItem>
                 <SelectItem value="procedure">Procedure</SelectItem>

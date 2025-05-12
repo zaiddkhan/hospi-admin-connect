@@ -244,7 +244,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                     </SelectItem>
                   ) : (
                     patients.map((patient) => (
-                      <SelectItem key={patient.id} value={patient.id}>
+                      <SelectItem key={patient.id||"hehe"} value={patient.id}>
                         {patient.name}
                       </SelectItem>
                     ))
@@ -313,7 +313,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                     </SelectItem>
                   ) : (
                     availableTimeSlots.map((slot) => (
-                      <SelectItem key={slot} value={slot}>
+                      <SelectItem key={slot } value={slot || ""}>
                         {format(new Date(`2000-01-01T${slot}`), "h:mm a")}
                       </SelectItem>
                     ))
