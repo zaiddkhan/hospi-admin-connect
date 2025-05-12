@@ -1,141 +1,71 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useAppointments } from "@/hooks/useAppointments";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTodayAppointments, useUpdateAppointment } from "@/hooks/useAppointments";
-import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 
 const UpcomingAppointments = () => {
-  const navigate = useNavigate();
-  const { data: appointments, isLoading, error } = useTodayAppointments();
-  const updateAppointment = useUpdateAppointment();
+  const { data: appointments, isLoading } = useAppointments();
 
-  const handleViewAll = () => {
-    navigate("/appointments");
+  // Function to determine the avatar color based on appointment type
+  const getAvatarColor = (type: string) => {
+    switch (type) {
+      case "consultation":
+        return "bg-primary text-primary-foreground";
+      case "checkup":
+        return "bg-secondary text-secondary-foreground";
+      case "followup":
+        return "bg-accent text-accent-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
   };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("");
-  };
-
-  const handleSendReminder = (id: string) => {
-    // Update appointment to add a reminder flag
-    updateAppointment.mutate({
-      id,
-      appointmentData: { reminder_sent: true }
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
-          <CardTitle className="text-lg">Today's Appointments</CardTitle>
-          <Button variant="outline" size="sm">
-            View All
-          </Button>
-        </CardHeader>
-        <CardContent className="px-4 pb-4 pt-0">
-          <div className="space-y-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error || !appointments) {
-    return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
-          <CardTitle className="text-lg">Today's Appointments</CardTitle>
-          <Button variant="outline" size="sm">
-            View All
-          </Button>
-        </CardHeader>
-        <CardContent className="px-4 pb-4 pt-0">
-          <div className="flex items-center justify-center py-4">
-            <p className="text-muted-foreground">Failed to load appointments</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between py-3 px-4">
-        <CardTitle className="text-lg">Today's Appointments</CardTitle>
-        <Button variant="outline" size="sm" onClick={handleViewAll}>
-          View All
-        </Button>
+    <Card className="shadow-md">
+      <CardHeader>
+        <CardTitle>Upcoming Appointments</CardTitle>
       </CardHeader>
-      <CardContent className="px-4 pb-4 pt-0">
-        <div className="space-y-2">
-          {appointments.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              No appointments scheduled for today
-            </p>
-          ) : (
-            appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="flex items-center justify-between p-2 rounded-md bg-secondary/50"
-              >
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                      {appointment.patients && getInitials(appointment.patients.name)}
-                    </AvatarFallback>
+      <CardContent className="p-0">
+        {isLoading ? (
+          <div className="p-4 space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-center space-x-4 py-2">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : appointments && appointments.length > 0 ? (
+          <ul className="divide-y divide-border">
+            {appointments.slice(0, 5).map((appointment) => (
+              <li key={appointment.id} className="p-4">
+                <div className="flex items-center space-x-4">
+                  <Avatar className={getAvatarColor(appointment.type)}>
+                    <AvatarImage src="https://github.com/shadcn.png" alt={appointment.patient_id} />
+                    <AvatarFallback>{appointment.patient_id?.substring(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="font-medium text-sm">{appointment.patients?.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(`${appointment.date}T${appointment.time}`), 'h:mm a')} • {appointment.type}
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none">{appointment.patient_id}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {format(new Date(appointment.date), "MMM dd, yyyy")} at {appointment.time}
                     </p>
                   </div>
+                  <div className="ml-auto">
+                    <Badge variant="secondary">{appointment.type}</Badge>
+                  </div>
                 </div>
-                <Badge
-                  variant={appointment.status === "confirmed" ? "default" : "outline"}
-                  className={
-                    appointment.status === "confirmed"
-                      ? "bg-success-500"
-                      : appointment.status === "cancelled"
-                      ? "border-error-500 text-error-500"
-                      : "border-warning-500 text-warning-500"
-                  }
-                >
-                  {appointment.status === "confirmed" ? "Confirmed" : 
-                   appointment.status === "cancelled" ? "Cancelled" : "Pending"}
-                </Badge>
-              </div>
-            ))
-          )}
-          {appointments.length > 0 && appointments.some(a => a.status === "pending") && (
-            <Button 
-              size="sm" 
-              className="w-full mt-2"
-              onClick={() => {
-                // Find the first pending appointment
-                const pendingAppointment = appointments.find(a => a.status === "pending");
-                if (pendingAppointment) {
-                  handleSendReminder(pendingAppointment.id);
-                }
-              }}
-            >
-              Send Reminder
-            </Button>
-          )}
-        </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="p-4 text-center text-muted-foreground">No upcoming appointments.</p>
+        )}
       </CardContent>
     </Card>
   );
