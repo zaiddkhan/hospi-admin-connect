@@ -1,3 +1,5 @@
+// Updated routing configuration for App.tsx
+// Import all necessary components including our new EnhancedInsights page
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +19,7 @@ import Inventory from "@/pages/Inventory";
 import Analytics from "@/pages/Analytics";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/auth/Login";
+import EnhancedInsights from "@/pages/EnhancedInsights"; // Import our new enhanced insights page
 import { useEffect, useState } from "react";
 
 // Create a new QueryClient instance
@@ -92,6 +95,9 @@ const App = () => {
             <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            
+            {/* Enhanced Insights route */}
+            <Route path="/insights" element={<ProtectedRoute><EnhancedInsights /></ProtectedRoute>} />
             
             {/* Not found */}
             <Route path="*" element={<NotFound />} />

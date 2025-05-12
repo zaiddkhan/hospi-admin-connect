@@ -1,6 +1,6 @@
 import React from "react";
-import { format, differenceInYears } from "date-fns";
-import { Calendar, User, Phone, Mail, Home, FileText, Clock, CheckCircle, Edit, Trash2 } from "lucide-react";
+import { format, differenceInYears, isValid } from "date-fns";
+import { Calendar, User, Phone, Mail, Home, FileText, Clock, CheckCircle, Edit, Trash2, AlertCircle } from "lucide-react";
 import { Patient } from "@/services/patientService";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { usePatientAppointments } from "@/hooks/usePatients";
 
@@ -31,7 +32,8 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
   // Fetch patient appointments
   const { 
     data: appointments, 
-    isLoading: appointmentsLoading 
+    isLoading: appointmentsLoading,
+    error: appointmentsError 
   } = usePatientAppointments(patient?.id);
 
   // Calculate patient age from birth_date
@@ -39,9 +41,24 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
     if (!birthDate) return null;
     try {
       const date = new Date(birthDate);
+      if (!isValid(date)) return null;
       return differenceInYears(new Date(), date);
     } catch (error) {
       return null;
+    }
+  };
+
+  // Get status badge styling
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return <Badge className="border-success-500 text-success-500">Confirmed</Badge>;
+      case "cancelled":
+        return <Badge className="border-error-500 text-error-500">Cancelled</Badge>;
+      case "completed":
+        return <Badge className="bg-primary">Completed</Badge>;
+      default:
+        return <Badge className="border-warning-500 text-warning-500">Pending</Badge>;
     }
   };
 
@@ -100,7 +117,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
         <div className="flex flex-col">
           <CardTitle>{patient.name}</CardTitle>
           <p className="text-sm text-muted-foreground">
-            {patient.id}
+            ID: {patient.id.substring(0, 8)}...
           </p>
         </div>
         <Badge
@@ -138,7 +155,11 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
                     <div>
                       <p className="text-sm font-medium">Age / Date of Birth</p>
                       <p>
-                        {calculateAge(patient.birth_date)} years ({format(new Date(patient.birth_date), "PP")})
+                        {calculateAge(patient.birth_date) ? (
+                          `${calculateAge(patient.birth_date)} years (${format(new Date(patient.birth_date), "PP")})`
+                        ) : (
+                          format(new Date(patient.birth_date), "PP")
+                        )}
                       </p>
                     </div>
                   </div>
@@ -187,13 +208,18 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
             <Separator />
 
             {/* Address */}
-            {patient.address && (
+            {patient.address ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Address</h3>
                 <div className="flex items-start gap-2">
                   <Home className="h-5 w-5 text-primary mt-0.5" />
                   <p>{patient.address}</p>
                 </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Address</h3>
+                <p className="text-muted-foreground">No address recorded</p>
               </div>
             )}
           </TabsContent>
@@ -207,7 +233,15 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
                 </Button>
               </div>
               
-              {appointmentsLoading ? (
+              {appointmentsError ? (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {appointmentsError.message || "Failed to load appointments"}
+                  </AlertDescription>
+                </Alert>
+              ) : appointmentsLoading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-16 w-full" />
                   <Skeleton className="h-16 w-full" />
@@ -218,7 +252,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
                   {appointments.map((appointment) => (
                     <div 
                       key={appointment.id} 
-                      className="flex items-center justify-between p-3 rounded-md bg-secondary/50"
+                      className="flex items-center justify-between p-3 rounded-md bg-secondary/50 hover:bg-secondary transition-colors"
                       onClick={() => navigate(`/appointments/${appointment.id}`)}
                       style={{ cursor: 'pointer' }}
                     >
@@ -233,20 +267,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
                           {appointment.type} - {appointment.status}
                         </p>
                       </div>
-                      <Badge
-                        variant={appointment.status === "completed" ? "default" : "outline"}
-                        className={
-                          appointment.status === "completed" 
-                            ? "bg-primary" 
-                            : appointment.status === "confirmed"
-                            ? "border-success-500 text-success-500"
-                            : appointment.status === "cancelled"
-                            ? "border-error-500 text-error-500"
-                            : "border-warning-500 text-warning-500"
-                        }
-                      >
-                        {appointment.status}
-                      </Badge>
+                      {getStatusBadge(appointment.status)}
                     </div>
                   ))}
                 </div>
@@ -263,7 +284,13 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
           
           <TabsContent value="medical">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Medical History</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Medical History</h3>
+                <Button onClick={onEdit} variant="outline" size="sm">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Update Medical History
+                </Button>
+              </div>
               
               {patient.medical_history ? (
                 <div className="bg-secondary/50 p-4 rounded-md">
@@ -277,6 +304,9 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
               ) : (
                 <div className="flex flex-col items-center justify-center p-6 bg-secondary/50 rounded-md">
                   <p className="text-muted-foreground">No medical history recorded</p>
+                  <Button onClick={onEdit} variant="outline" size="sm" className="mt-2">
+                    Add Medical History
+                  </Button>
                 </div>
               )}
             </div>
@@ -293,7 +323,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
         <div className="space-x-2">
           <Button onClick={onEdit} variant="outline">
             <Edit className="h-4 w-4 mr-2" />
-            Edit
+            Edit Patient
           </Button>
           <Button onClick={onDelete} variant="destructive">
             <Trash2 className="h-4 w-4 mr-2" />

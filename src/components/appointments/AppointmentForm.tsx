@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { CalendarIcon, Clock, User, FileText } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Time slots for appointments (30 min intervals from 9am to 5pm)
 const TIME_SLOTS = [
@@ -77,35 +77,42 @@ interface Appointment {
   };
 }
 
-interface AppointmentFormData {
-  patient_id: string;
-  date: string;
-  time: string;
-  type: string;
-  notes?: string;
-  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-}
-
 interface AppointmentFormProps {
   appointment?: Appointment;
+  onSubmit?: (data: any) => void;
   onSuccess?: () => void;
   patients?: Patient[];
   isLoading?: boolean;
+  isSubmitting?: boolean;
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({
   appointment,
+  onSubmit,
   onSuccess,
   patients = [],
-  isLoading = false
+  isLoading = false,
+  isSubmitting = false
 }) => {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [internalSubmitting, setInternalSubmitting] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
   
-  // Initialize the date state from the appointment or current date
-  const [date, setDate] = useState<Date | undefined>(
-    appointment?.date ? new Date(appointment.date) : new Date()
-  );
+  // Parse the appointment date safely, falling back to today if invalid
+  const getInitialDate = (): Date => {
+    if (!appointment?.date) return new Date();
+    
+    try {
+      const parsedDate = new Date(appointment.date);
+      return isValid(parsedDate) ? parsedDate : new Date();
+    } catch (e) {
+      setDateError("Invalid appointment date provided. Using today's date instead.");
+      return new Date();
+    }
+  };
+  
+  // Initialize the date state
+  const [date, setDate] = useState<Date | undefined>(getInitialDate());
 
   // Initialize form with default values or existing appointment data
   const {
@@ -118,7 +125,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
       patient_id: appointment?.patient_id || "",
-      date: appointment?.date ? new Date(appointment.date) : new Date(),
+      date: getInitialDate(),
       time: appointment?.time || "09:00",
       type: appointment?.type || "consultation",
       notes: appointment?.notes || "",
@@ -140,44 +147,43 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     }
   }, [date, setValue]);
 
-  // Form submission handler - made asynchronous for better error handling
-  const onSubmit = async (data: FormValues) => {
+  // Form submission handler
+  const handleFormSubmit = async (data: FormValues) => {
+    // Use external isSubmitting state if provided, otherwise use internal state
+    const submittingState = isSubmitting !== undefined ? isSubmitting : internalSubmitting;
+    
+    if (submittingState) return; // Prevent double submission
+    
     try {
-      setIsSubmitting(true);
+      if (isSubmitting === undefined) setInternalSubmitting(true);
       
       // Format the data
-      const formattedData: AppointmentFormData = {
+      const formattedData = {
         patient_id: data.patient_id,
         date: format(data.date, "yyyy-MM-dd"),
         time: data.time,
         type: data.type,
-        notes: data.notes,
+        notes: data.notes || undefined,
         status: data.status
       };
 
-      // Simulating API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Success path
-      if (appointment?.id) {
-        // Update existing appointment
-        toast.success("Appointment updated successfully");
+      if (onSubmit) {
+        // Use provided onSubmit handler
+        await onSubmit(formattedData);
       } else {
-        // Create new appointment
-        toast.success("Appointment scheduled successfully");
-      }
-
-      // Call success callback or navigate back
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate("/appointments");
+        // If no onSubmit provided, handle internally
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate("/appointments");
+        }
       }
     } catch (error) {
       console.error("Form submission error:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to save appointment");
     } finally {
-      setIsSubmitting(false);
+      if (isSubmitting === undefined) setInternalSubmitting(false);
     }
   };
 
@@ -214,6 +220,9 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   };
 
   const availableTimeSlots = getAvailableTimeSlots();
+  
+  // Determine if the form is submitting (external or internal state)
+  const formIsSubmitting = isSubmitting || internalSubmitting;
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -222,7 +231,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           {appointment?.id ? "Edit Appointment" : "Schedule Appointment"}
         </CardTitle>
       </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      
+      {dateError && (
+        <Alert className="mx-6 mt-0 mb-4">
+          <AlertDescription>{dateError}</AlertDescription>
+        </Alert>
+      )}
+      
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
         <CardContent className="space-y-4">
           {/* Patient Selection */}
           <div className="space-y-2">
@@ -232,7 +248,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               <Select
                 value={patientId}
                 onValueChange={(value) => setValue("patient_id", value)}
-                disabled={isLoading || isSubmitting}
+                disabled={isLoading || formIsSubmitting}
               >
                 <SelectTrigger id="patient_id" className="w-full">
                   <SelectValue placeholder="Select patient" />
@@ -244,7 +260,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                     </SelectItem>
                   ) : (
                     patients.map((patient) => (
-                      <SelectItem key={patient.id||"hehe"} value={patient.id}>
+                      <SelectItem key={patient.id} value={patient.id}>
                         {patient.name}
                       </SelectItem>
                     ))
@@ -268,7 +284,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                     "w-full justify-start text-left font-normal",
                     !selectedDate && "text-muted-foreground"
                   )}
-                  disabled={isSubmitting}
+                  disabled={formIsSubmitting}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {selectedDate ? (
@@ -301,7 +317,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               <Select
                 value={selectedTime}
                 onValueChange={(value) => setValue("time", value)}
-                disabled={isSubmitting}
+                disabled={formIsSubmitting}
               >
                 <SelectTrigger id="time" className="w-full">
                   <SelectValue placeholder="Select time" />
@@ -313,7 +329,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                     </SelectItem>
                   ) : (
                     availableTimeSlots.map((slot) => (
-                      <SelectItem key={slot } value={slot || ""}>
+                      <SelectItem key={slot} value={slot}>
                         {format(new Date(`2000-01-01T${slot}`), "h:mm a")}
                       </SelectItem>
                     ))
@@ -339,7 +355,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             <Select
               value={selectedType}
               onValueChange={(value) => setValue("type", value)}
-              disabled={isSubmitting}
+              disabled={formIsSubmitting}
             >
               <SelectTrigger id="type" className="w-full">
                 <SelectValue placeholder="Select type" />
@@ -366,7 +382,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 onValueChange={(value) => 
                   setValue("status", value as "pending" | "confirmed" | "cancelled" | "completed")
                 }
-                disabled={isSubmitting}
+                disabled={formIsSubmitting}
               >
                 <SelectTrigger id="status" className="w-full">
                   <SelectValue placeholder="Select status" />
@@ -386,7 +402,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">Notes (optional)</Label>
             <div className="flex items-start gap-2">
               <FileText className="h-4 w-4 text-muted-foreground mt-2" />
               <Textarea
@@ -394,7 +410,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 placeholder="Add any special instructions or notes..."
                 className="min-h-[80px]"
                 {...register("notes")}
-                disabled={isSubmitting}
+                disabled={formIsSubmitting}
               />
             </div>
           </div>
@@ -404,15 +420,15 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             type="button" 
             variant="outline"
             onClick={() => navigate("/appointments")}
-            disabled={isSubmitting}
+            disabled={formIsSubmitting}
           >
             Cancel
           </Button>
           <Button 
             type="submit" 
-            disabled={isSubmitting}
+            disabled={formIsSubmitting}
           >
-            {isSubmitting 
+            {formIsSubmitting 
               ? "Saving..." 
               : appointment?.id 
                 ? "Update Appointment" 

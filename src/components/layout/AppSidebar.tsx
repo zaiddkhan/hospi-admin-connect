@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { 
@@ -9,7 +8,8 @@ import {
   BarChart3, 
   Package2, 
   Settings,
-  Users
+  Users,
+  Lightbulb // Added for insights
 } from "lucide-react";
 import { 
   Sidebar, 
@@ -61,6 +61,12 @@ const NavLinks = [
     title: "Analytics", 
     icon: BarChart3, 
     path: "/analytics" 
+  },
+  // Add insights link to the sidebar
+  {
+    title: "AI Insights",
+    icon: Lightbulb,
+    path: "/insights"
   }
 ];
 

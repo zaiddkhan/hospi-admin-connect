@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
@@ -8,15 +8,22 @@ import { useQuery } from "@tanstack/react-query";
 import { patientsAPI } from "@/services/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useCreateAppointment } from "@/hooks/useAppointments";
+import { format, isValid } from "date-fns";
 
 const NewAppointment = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const createAppointment = useCreateAppointment();
   
-  // Extract any query params (for pre-filling form)
+  // Extract query params (for pre-filling form)
   const queryParams = new URLSearchParams(location.search);
   const patientId = queryParams.get("patient_id");
   const dateParam = queryParams.get("date");
+  
+  // Validate date parameter
+  const parsedDate = dateParam ? new Date(dateParam) : new Date();
+  const isValidDate = dateParam ? isValid(parsedDate) : true;
   
   // Fetch patients for the dropdown
   const { 
@@ -39,28 +46,53 @@ const NewAppointment = () => {
     enabled: !!patientId
   });
   
-  // Format patients for the form
-  const patients = patientsData 
-    ? patientsData.map((patient) => ({
-        id: patient.id,
-        name: patient.name
-      }))
-    : [];
-  
-  // Add the single patient to the list if we have loaded a specific patient
-  useEffect(() => {
-    if (patientData && !patientsData?.some(p => p.id === patientData.id)) {
-      patients.push({
+  // Format patients for the form using useMemo to avoid recreating this list unnecessarily
+  const patients = useMemo(() => {
+    const patientsList = patientsData 
+      ? patientsData.map((patient) => ({
+          id: patient.id,
+          name: patient.name
+        }))
+      : [];
+    
+    // Add the specific patient if it's not already in the list
+    if (patientData && !patientsList.some(p => p.id === patientData.id)) {
+      return [...patientsList, {
         id: patientData.id,
         name: patientData.name
-      });
+      }];
     }
-  }, [patientData, patientsData]);
+    
+    return patientsList;
+  }, [patientsData, patientData]);
   
+  // Handle form submission
+  const handleSubmit = (formData) => {
+    createAppointment.mutate(formData, {
+      onSuccess: () => {
+        navigate("/appointments");
+      }
+    });
+  };
+
   // Handle successful form submission
   const handleSuccess = () => {
     navigate("/appointments");
   };
+  
+  // Check if there are any loading or error states
+  const isLoading = patientsLoading || patientLoading;
+  const error = patientsError || patientError;
+  
+  // Build appointment default values if applicable
+  const appointmentDefaults = (patientId || dateParam) ? {
+    id: "",
+    patient_id: patientId || "",
+    date: isValidDate ? format(parsedDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
+    time: "09:00",
+    type: "consultation",
+    status: "pending",
+  } : undefined;
 
   return (
     <AppLayout>
@@ -78,12 +110,22 @@ const NewAppointment = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="page-title text-center mb-4">Schedule New Appointment</h1>
           
-          {/* Error State */}
-          {(patientsError || patientError) && (
+          {/* Date parameter error */}
+          {dateParam && !isValidDate && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTitle>Invalid Date</AlertTitle>
+              <AlertDescription>
+                The provided date parameter is invalid. Using today's date instead.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* API Errors */}
+          {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
-                {patientsError?.message || patientError?.message || "Failed to load patient data. Please try again."}
+                {error.message || "Failed to load patient data. Please try again."}
               </AlertDescription>
             </Alert>
           )}
@@ -103,25 +145,19 @@ const NewAppointment = () => {
             </Alert>
           )}
           
-          {/* Loading State */}
-          {(patientsLoading || patientLoading) && patientId ? (
+          {/* Show loading state only when first loading a specific patient */}
+          {(patientLoading && patientId) ? (
             <div className="p-8 flex justify-center">
               <Skeleton className="h-64 w-full max-w-md" />
             </div>
           ) : (
             <AppointmentForm
+              onSubmit={handleSubmit}
               onSuccess={handleSuccess}
               patients={patients}
-              isLoading={patientsLoading || patientLoading}
-              // If we have pre-filled data from query params
-              appointment={patientId || dateParam ? {
-                id: "",
-                patient_id: patientId || "",
-                date: dateParam ? new Date(dateParam).toISOString() : new Date().toISOString(),
-                time: "09:00",
-                type: "consultation",
-                status: "pending",
-              } : undefined}
+              isLoading={isLoading}
+              isSubmitting={createAppointment.isPending}
+              appointment={appointmentDefaults}
             />
           )}
         </div>

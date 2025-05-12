@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Patient } from "@/services/patientService";
-import { Search, Download, Upload, Plus, Edit, Trash2, FileText, Calendar } from "lucide-react";
+import { Search, Download, Upload, Plus, Edit, Trash2, FileText, Calendar, MoreHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { format, isValid, differenceInYears } from "date-fns";
+import { toast } from "sonner";
 
 interface PatientListProps {
   patients: Patient[];
@@ -49,27 +50,48 @@ const PatientList: React.FC<PatientListProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
 
-  // Filter patients based on search query and filters
-  const filteredPatients = patients.filter((patient) => {
-    const matchesSearch =
-      !searchQuery ||
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.contact.includes(searchQuery) ||
-      (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Calculate patient age
+  const calculateAge = (birthDate?: string) => {
+    if (!birthDate) return "-";
+    try {
+      const date = new Date(birthDate);
+      if (!isValid(date)) return "-";
+      return differenceInYears(new Date(), date);
+    } catch (error) {
+      return "-";
+    }
+  };
 
-    const matchesStatus = !statusFilter || patient.status === statusFilter;
+  // Filter patients based on search query and filters - memoized for performance
+  const filteredPatients = useMemo(() => {
+    return patients.filter((patient) => {
+      const matchesSearch =
+        !searchQuery ||
+        patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        patient.contact.includes(searchQuery) ||
+        (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesSearch && matchesStatus;
-  });
+      const matchesStatus = !statusFilter || statusFilter === "all" || patient.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [patients, searchQuery, statusFilter]);
 
   // Navigate to patient detail page
   const navigateToPatient = (id: string) => {
     navigate(`/patients/${id}`);
   };
 
-  // Navigate to edit patient page
-  const handleEdit = (id: string) => {
-    navigate(`/patients/${id}`);
+  // Handle export function
+  const handleExport = () => {
+    toast.info("Exporting patient data...");
+    // Implementation would go here
+  };
+
+  // Handle import function
+  const handleImport = () => {
+    toast.info("Import feature coming soon");
+    // Implementation would go here
   };
 
   // Handle patient deletion with confirmation
@@ -82,7 +104,8 @@ const PatientList: React.FC<PatientListProps> = ({
   };
 
   // Navigate to schedule appointment for specific patient
-  const handleScheduleAppointment = (id: string) => {
+  const handleScheduleAppointment = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering row click
     navigate(`/appointments/new?patient_id=${id}`);
   };
 
@@ -143,20 +166,23 @@ const PatientList: React.FC<PatientListProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select 
+              value={statusFilter} 
+              onValueChange={setStatusFilter}
+            >
               <SelectTrigger className="w-full md:w-40">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="All Status">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={handleExport}>
               <Download className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={handleImport}>
               <Upload className="h-4 w-4" />
             </Button>
             <Button size="sm" onClick={() => navigate("/patients/new")}>
@@ -177,7 +203,7 @@ const PatientList: React.FC<PatientListProps> = ({
               </Button>
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -192,20 +218,16 @@ const PatientList: React.FC<PatientListProps> = ({
                 </TableHeader>
                 <TableBody>
                   {filteredPatients.map((patient) => (
-                    <TableRow key={patient.id}>
+                    <TableRow 
+                      key={patient.id}
+                      className="cursor-pointer"
+                      onClick={() => navigateToPatient(patient.id)}
+                    >
                       <TableCell className="font-medium">
-                        <div 
-                          className="cursor-pointer"
-                          onClick={() => navigateToPatient(patient.id)}
-                        >
-                          {patient.name}
-                        </div>
+                        {patient.name}
                       </TableCell>
                       <TableCell>
-                        {patient.age || 
-                         (patient.birth_date ? 
-                          new Date().getFullYear() - new Date(patient.birth_date).getFullYear() 
-                          : "-")}
+                        {patient.age || calculateAge(patient.birth_date)}
                       </TableCell>
                       <TableCell>{patient.gender || "-"}</TableCell>
                       <TableCell>{patient.contact}</TableCell>
@@ -227,44 +249,39 @@ const PatientList: React.FC<PatientListProps> = ({
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <Button variant="ghost" size="sm">
                               <span className="sr-only">Open menu</span>
-                              <svg
-                                width="15"
-                                height="15"
-                                viewBox="0 0 15 15"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                              >
-                                <path
-                                  d="M3.625 7.5C3.625 8.12132 3.12132 8.625 2.5 8.625C1.87868 8.625 1.375 8.12132 1.375 7.5C1.375 6.87868 1.87868 6.375 2.5 6.375C3.12132 6.375 3.625 6.87868 3.625 7.5ZM8.625 7.5C8.625 8.12132 8.12132 8.625 7.5 8.625C6.87868 8.625 6.375 8.12132 6.375 7.5C6.375 6.87868 6.87868 6.375 7.5 6.375C8.12132 6.375 8.625 6.87868 8.625 7.5ZM13.625 7.5C13.625 8.12132 13.1213 8.625 12.5 8.625C11.8787 8.625 11.375 8.12132 11.375 7.5C11.375 6.87868 11.8787 6.375 12.5 6.375C13.1213 6.375 13.625 6.87868 13.625 7.5Z"
-                                  fill="currentColor"
-                                  fillRule="evenodd"
-                                  clipRule="evenodd"
-                                ></path>
-                              </svg>
+                              <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => navigateToPatient(patient.id)}>
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation();
+                              navigateToPatient(patient.id);
+                            }}>
                               <FileText className="h-4 w-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleScheduleAppointment(patient.id)}>
+                            <DropdownMenuItem onClick={(e) => handleScheduleAppointment(patient.id, e)}>
                               <Calendar className="h-4 w-4 mr-2" />
                               Schedule Appointment
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleEdit(patient.id)}>
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/patients/${patient.id}?edit=true`);
+                            }}>
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               className="text-error-500"
-                              onClick={() => handleDelete(patient.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(patient.id);
+                              }}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete

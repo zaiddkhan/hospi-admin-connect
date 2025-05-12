@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Clock, Plus, User } from "lucide-react";
@@ -21,28 +20,62 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { usePatients } from "@/hooks/usePatients";
+import { useCreateAppointment } from "@/hooks/useAppointments";
+import { useNavigate } from "react-router-dom";
 
 const AppointmentScheduler = () => {
-  const [date, setDate] = useState<Date>();
-  const [patient, setPatient] = useState("");
+  const navigate = useNavigate();
+  const [date, setDate] = useState<Date>();``
+  const [patientId, setPatientId] = useState("");
   const [appointmentType, setAppointmentType] = useState("");
   const [time, setTime] = useState("");
+  const [notes, setNotes] = useState("");
+
+  // Fetch patients for the dropdown
+  const { data: patients, isLoading: patientsLoading } = usePatients();
+  
+  // Mutation hook for creating appointments
+  const createAppointment = useCreateAppointment();
+
+  // Validate the form
+  const isFormValid = date && patientId && appointmentType && time;
 
   const handleScheduleAppointment = () => {
-    if (!date || !patient || !appointmentType || !time) {
-      toast.error("Please fill in all fields");
+    if (!isFormValid) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    // Placeholder for backend integration
-    toast.success("Appointment scheduled successfully");
-    
-    // Reset form
-    setDate(undefined);
-    setPatient("");
-    setAppointmentType("");
-    setTime("");
+    console.log("reached 123")
+
+    // Format the appointment data
+    const appointmentData = {
+      patient_id: patientId,
+      date: format(date as Date, "yyyy-MM-dd"),
+      time: time,
+      type: appointmentType,
+      notes: notes || undefined,
+    };
+
+    // Submit the appointment
+    createAppointment.mutate(appointmentData, {
+      onSuccess: () => {
+        // Reset form on success
+        setDate(undefined);
+        setPatientId("");
+        setAppointmentType("");
+        setTime("");
+        setNotes("");
+        
+        // Navigate to appointments page or stay on current page
+        // navigate("/appointments");
+      }
+    });
   };
+
+  // Get today's date for min date in calendar
+  const today = new Date();
 
   return (
     <Card className="col-span-1 lg:col-span-1">
@@ -52,16 +85,31 @@ const AppointmentScheduler = () => {
       <CardContent className="px-4 pb-4 pt-0">
         <div className="space-y-3">
           <div className="space-y-1">
-            <Label htmlFor="patient" className="text-sm">Patient Name</Label>
+            <Label htmlFor="patient" className="text-sm">Patient</Label>
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
-              <Input
-                id="patient"
-                placeholder="Enter patient name"
-                value={patient}
-                onChange={(e) => setPatient(e.target.value)}
-                className="h-9"
-              />
+              <Select value={patientId} onValueChange={setPatientId} disabled={patientsLoading}>
+                <SelectTrigger className="w-full h-9">
+                  <SelectValue placeholder="Select patient" />
+                </SelectTrigger>
+                <SelectContent>
+                  {patientsLoading ? (
+                    <SelectItem value="loading" disabled>
+                      Loading patients...
+                    </SelectItem>
+                  ) : patients && patients.length > 0 ? (
+                    patients.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                        {patient.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-patients" disabled>
+                      No patients found
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -87,6 +135,7 @@ const AppointmentScheduler = () => {
                   onSelect={setDate}
                   initialFocus
                   className="p-2 pointer-events-auto"
+                  disabled={(date) => date < today}
                 />
               </PopoverContent>
             </Popover>
@@ -138,12 +187,30 @@ const AppointmentScheduler = () => {
             </Select>
           </div>
 
+          <div className="space-y-1">
+            <Label htmlFor="notes" className="text-sm">Notes (optional)</Label>
+            <Input
+              id="notes"
+              placeholder="Add any special instructions"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="h-9"
+            />
+          </div>
+
           <Button 
             className="w-full mt-3" 
             onClick={handleScheduleAppointment}
             size="sm"
+            disabled={!isFormValid || createAppointment.isPending}
           >
-            <Plus className="h-4 w-4 mr-2" /> Schedule Appointment
+            {createAppointment.isPending ? (
+              "Scheduling..."
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" /> Schedule Appointment
+              </>
+            )}
           </Button>
         </div>
       </CardContent>
