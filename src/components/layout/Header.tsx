@@ -72,13 +72,13 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative hidden md:block max-w-sm">
+          {/* <div className="relative hidden md:block max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search..."
               className="pl-8 bg-background border-muted w-full md:w-[300px] rounded-full"
             />
-          </div>
+          </div> */}
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
