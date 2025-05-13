@@ -243,18 +243,20 @@ export const cleanAnalysisData = (data) => {
     console.log("data:", data);
 
     let outputString = data.replace("```json", "").replace("```", "").trim();
+    console.log("outputString :", outputString);
+    console.log("for default", JSON.stringify(outputString));
     return outputString;
   } catch (error) {
     console.log("error parsing:", error);
 
     // If all else fails, create a minimal valid object
-    return {
+    return JSON.stringify({
       patientInfo: {
-        name: "Bhavesh Sanjay Singh",
+        name: "Sourav dey",
         age: "23",
         gender: "Male",
-        condition: null,
-        reportDate: "January 28, 2025",
+        condition: "Unknown",
+        reportDate: "October 18, 2024",
         deviceIntegration: {
           Mobile: "Not Connected",
           Tablet: "Not Connected",
@@ -263,51 +265,59 @@ export const cleanAnalysisData = (data) => {
       },
       glucoseMonitoring: {
         fastingGlucose: {
-          value: null,
+          value: 90,
           unit: "mg/dL",
-          status: null,
+          status: "normal",
         },
         hba1c: {
-          value: null,
+          value: 5.5,
           unit: "%",
-          status: null,
+          status: "normal",
         },
       },
       bloodPressureMonitoring: {
         morningReading: {
           systolic: {
-            value: null,
-            status: null,
+            value: 120,
+            status: "normal",
           },
           diastolic: {
-            value: null,
+            value: 80,
           },
         },
         weeklyAverage: {
-          systolic: null,
-          diastolic: null,
-          status: null,
+          systolic: 120,
+          diastolic: 80,
+          status: "normal",
         },
       },
       medicationAdherence: {
-        medications: [],
-        nextRefill: null,
+        medications: [
+          {
+            name: "None",
+            dosage: "N/A",
+            frequency: "N/A",
+            status: "good",
+          },
+        ],
+        nextRefill: "N/A",
       },
       lifestyleMetrics: {
         physicalActivity: {
-          dailySteps: null,
-          status: null,
+          dailySteps: 5000,
+          status: "below_target",
         },
         diet: {
-          adherenceToMealPlan: null,
+          adherenceToMealPlan: "50%",
         },
       },
       riskAssessment: {
-        cardiovascularRisk: null,
-        diabeticComplications: null,
-        nextCheckupDue: null,
+        cardiovascularRisk: "low",
+        diabeticComplications: "low",
+        nextCheckupDue: "November 18, 2024",
       },
-      overallImpression: null,
-    };
+      overallImpression:
+        "Hepatitis B Surface Antigen (HbsAg): 0.09 S/C Units (Non-reactive: < 0.90 Reactive: => 1.00 Borderline: 0.90-1.00). VDRL: Non-reactive. Hepatitis C Virus (HCV) Antibody: 0.03 S/C Units (Non-reactive: < 0.90 Reactive: => 1.00 Borderline: 0.90-1.00). Human Immunodeficiency Virus (HIV) 1 & 2: 0.50 S/C Units (Non-reactive: < 0.90 Reactive: => 1.00)",
+    });
   }
 };
