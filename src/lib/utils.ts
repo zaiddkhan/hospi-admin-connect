@@ -10,10 +10,20 @@ export function cn(...inputs: ClassValue[]) {
 export const extractPDFText = async (
   files: File[],
   comments: string
-): Promise<string[]> => {
+): Promise<any> => {
   try {
+    if (!files || files.length === 0) {
+      return ["Please upload a file in proper format"];
+    }
+
     const file = files[0];
     const text = await pdfToText(file);
+
+    if (!text) {
+      return { error: 1 };
+    }
+
+    console.log("text PDF reader:", text);
     return [
       `==== PDF DOCUMENT: ${file.name} ====\n\n${text}\n\n==== END OF ${file.name} ====`,
     ];
