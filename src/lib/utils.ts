@@ -59,7 +59,7 @@ export const extractPDFText = async (
 export async function callGeminiAPI(
   prompt: string,
   temperature = 0.3,
-  maxTokens = 4000
+  maxTokens = 400000
 ): Promise<string> {
   console.log("prompt inside gemini:", prompt);
   try {
@@ -112,91 +112,243 @@ export async function callGeminiAPI(
   }
 }
 
+// export const analyzeDocumentsPrompt = (document: any) => {
+//   return `
+//   You are a medical data extractor. Your job is to read the provided medical document and extract the key patient information in a clear, human-readable format.
+
+//   Document to analyze: ${JSON.stringify(document)}
+
+//   Please extract and present the following information:
+//   1. Basic patient details (name, age, gender)
+//   2. Medical conditions
+//   3. Key measurements (blood pressure, glucose, etc.) with their values and units
+//   4. Current medications with dosages
+//   5. Lifestyle information
+//   6. Risk factors
+//   7. Doctor's assessment
+//   8. Upcoming appointments
+
+//   Format the information in simple, readable sections with appropriate headings. Highlight abnormal values (high/low) where relevant. Only include information that is clearly present in the document - do not make assumptions about missing data.
+  
+
+//   Return a JSON object with the following structure:
+// {
+//   "patientInfo": {
+//     "name": "Full patient name",
+//     "age": "Age in years (numeric only)",
+//     "gender": "Patient gender",
+//     "condition": "Primary medical condition",
+//     "reportDate": "Date of the report in readable format",
+//     "deviceIntegration": {
+//       "Mobile": "Connected or Not Connected",
+//       "Tablet": "Connected or Not Connected",
+//       "Desktop": "Connected or Not Connected"
+//     }
+//   },
+//   "glucoseMonitoring": {
+//     "fastingGlucose": {
+//       "value": numeric value,
+//       "unit": "mg/dL",
+//       "status": "high/normal/low"
+//     },
+//     "hba1c": {
+//       "value": numeric value,
+//       "unit": "%",
+//       "status": "high/normal/low"
+//     }
+//   },
+//   "bloodPressureMonitoring": {
+//     "morningReading": {
+//       "systolic": {
+//         "value": numeric value,
+//         "status": "high/normal/low"
+//       },
+//       "diastolic": {
+//         "value": numeric value
+//       }
+//     },
+//     "weeklyAverage": {
+//       "systolic": numeric value,
+//       "diastolic": numeric value,
+//       "status": "high/normal/low"
+//     }
+//   },
+//   "medicationAdherence": {
+//     "medications": [
+//       {
+//         "name": "Medication name",
+//         "dosage": "Dosage info",
+//         "frequency": "Frequency info",
+//         "status": "good/below_target"
+//       }
+//     ],
+//     "nextRefill": "Next refill date"
+//   },
+//   "lifestyleMetrics": {
+//     "physicalActivity": {
+//       "dailySteps": numeric value,
+//       "status": "good/below_target"
+//     },
+//     "diet": {
+//       "adherenceToMealPlan": "Percentage or description"
+//     }
+//   },
+//   "riskAssessment": {
+//     "cardiovascularRisk": "moderate/low/high",
+//     "diabeticComplications": "low/moderate/high",
+//     "nextCheckupDue": "Next checkup date"
+//   },
+//   "overallImpression": "Detailed clinical assessment text"
+// }
+
+// Important guidelines:
+// 1. Use the EXACT field names shown above
+// 2. For missing data, use reasonable defaults based on available information
+// 3. Status values must be one of: "high", "low", "normal", "good", "below_target", "moderate"
+// 4. Ensure all numeric values are actual numbers without units (units are separate fields)
+// 5. DO NOT add any explanatory text outside the JSON object
+// 6. Only return valid JSON that can be parsed with JSON.parse()
+// 7. Format dates as readable strings (e.g., "May 15, 2025")
+// 8. If a field is not present in the given pdf make up the value but make sure you send all of the values given in the JSON in a string
+// 9. Return {the specified json}
+// 10. Do not add anything else do not add delimeter or json or \n in your reply just a single object 
+
+
+//   `;
+// };
+
 export const analyzeDocumentsPrompt = (document: any) => {
   return `
   You are a medical data extractor. Your job is to read the provided medical document and extract the key patient information in a clear, human-readable format.
-
+  
   Document to analyze: ${JSON.stringify(document)}
-
-  Please extract and present the following information:
-  1. Basic patient details (name, age, gender)
-  2. Medical conditions
-  3. Key measurements (blood pressure, glucose, etc.) with their values and units
-  4. Current medications with dosages
-  5. Lifestyle information
-  6. Risk factors
-  7. Doctor's assessment
-  8. Upcoming appointments
-
+  
+  Please extract and present the following information from standard medical report components:
+  
+  1. Patient identification information
+  2. Date and time of report/procedure
+  3. Ordering physician details
+  4. Clinical information and reason for examination
+  5. Procedure details (if applicable)
+  6. Test findings and results
+  7. Medical interpretation and impressions
+  8. Recommendations for treatment/follow-up
+  9. Reference ranges for tests (if applicable)
+  10. Authentication/signature information
+  
   Format the information in simple, readable sections with appropriate headings. Highlight abnormal values (high/low) where relevant. Only include information that is clearly present in the document - do not make assumptions about missing data.
   
-
   Return a JSON object with the following structure:
 {
-  "patientInfo": {
+  "patientIdentification": {
     "name": "Full patient name",
     "age": "Age in years (numeric only)",
     "gender": "Patient gender",
-    "condition": "Primary medical condition",
+    "medicalRecordNumber": "MRN if available",
+    "contactInformation": "Contact details if present"
+  },
+  "dateAndTime": {
     "reportDate": "Date of the report in readable format",
-    "deviceIntegration": {
-      "Mobile": "Connected or Not Connected",
-      "Tablet": "Connected or Not Connected",
-      "Desktop": "Connected or Not Connected"
-    }
+    "procedureDate": "Date of procedure if different",
+    "reportGenerated": "When report was created"
   },
-  "glucoseMonitoring": {
-    "fastingGlucose": {
-      "value": numeric value,
-      "unit": "mg/dL",
-      "status": "high/normal/low"
-    },
-    "hba1c": {
-      "value": numeric value,
-      "unit": "%",
-      "status": "high/normal/low"
-    }
+  "orderingPhysician": {
+    "name": "Physician's name",
+    "contactDetails": "Contact information",
+    "providerId": "Provider identification"
   },
-  "bloodPressureMonitoring": {
-    "morningReading": {
-      "systolic": {
-        "value": numeric value,
+  "clinicalInformation": {
+    "primaryCondition": "Primary medical condition",
+    "symptoms": "Presenting symptoms",
+    "reasonForExamination": "Why test was ordered"
+  },
+  "procedureDetails": {
+    "testType": "Type of examination performed",
+    "methodology": "How the test was conducted",
+    "equipmentUsed": "Relevant equipment information"
+  },
+  "findingsAndResults": {
+    "glucoseMonitoring": {
+      "fastingGlucose": {
+        "value": "numeric value",
+        "unit": "mg/dL",
         "status": "high/normal/low"
       },
-      "diastolic": {
-        "value": numeric value
+      "hba1c": {
+        "value": "numeric value",
+        "unit": "%",
+        "status": "high/normal/low"
       }
     },
-    "weeklyAverage": {
-      "systolic": numeric value,
-      "diastolic": numeric value,
-      "status": "high/normal/low"
-    }
+    "bloodPressureMonitoring": {
+      "morningReading": {
+        "systolic": {
+          "value": "numeric value",
+          "status": "high/normal/low"
+        },
+        "diastolic": {
+          "value": "numeric value"
+        }
+      },
+      "weeklyAverage": {
+        "systolic": "numeric value",
+        "diastolic": "numeric value",
+        "status": "high/normal/low"
+      }
+    },
+    "otherMeasurements": "Array of other test results"
   },
-  "medicationAdherence": {
-    "medications": [
-      {
-        "name": "Medication name",
-        "dosage": "Dosage info",
-        "frequency": "Frequency info",
+  "interpretation": {
+    "diagnosis": "Clinical diagnosis",
+    "significantFindings": "Notable observations",
+    "comparisonToPriorStudies": "Changes from previous tests"
+  },
+  "recommendations": {
+    "medicationAdherence": {
+      "medications": [
+        {
+          "name": "Medication name",
+          "dosage": "Dosage info",
+          "frequency": "Frequency info",
+          "status": "good/below_target"
+        }
+      ],
+      "nextRefill": "Next refill date"
+    },
+    "additionalTesting": "Suggested follow-up tests",
+    "followUpTimeline": "When to schedule next visit",
+    "lifestyleRecommendations": {
+      "physicalActivity": {
+        "dailySteps": "numeric value",
         "status": "good/below_target"
+      },
+      "diet": {
+        "adherenceToMealPlan": "Percentage or description"
       }
-    ],
-    "nextRefill": "Next refill date"
-  },
-  "lifestyleMetrics": {
-    "physicalActivity": {
-      "dailySteps": numeric value,
-      "status": "good/below_target"
-    },
-    "diet": {
-      "adherenceToMealPlan": "Percentage or description"
     }
+  },
+  "referenceRanges": {
+    "glucoseRanges": {
+      "fastingGlucose": "Normal range",
+      "hba1c": "Normal range"
+    },
+    "bloodPressureRanges": "Normal BP ranges",
+    "otherRanges": "Object with other reference ranges"
+  },
+  "authentication": {
+    "providerSignature": "Signing physician",
+    "credentials": "Provider credentials",
+    "signatureTimestamp": "When signed"
   },
   "riskAssessment": {
     "cardiovascularRisk": "moderate/low/high",
     "diabeticComplications": "low/moderate/high",
     "nextCheckupDue": "Next checkup date"
+  },
+  "deviceIntegration": {
+    "Mobile": "Connected or Not Connected",
+    "Tablet": "Connected or Not Connected",
+    "Desktop": "Connected or Not Connected"
   },
   "overallImpression": "Detailed clinical assessment text"
 }
@@ -209,11 +361,9 @@ Important guidelines:
 5. DO NOT add any explanatory text outside the JSON object
 6. Only return valid JSON that can be parsed with JSON.parse()
 7. Format dates as readable strings (e.g., "May 15, 2025")
-8. If a field is not present in the given pdf make up the value but make sure you send all of the values given in the JSON in a string
+8. If a field is not present in the given document, make up a reasonable value but ensure you include all fields specified in the JSON structure
 9. Return {the specified json}
-10. Do not add anything else do not add delimeter or json or \n in your reply just a single object 
-
-
+10. Do not add anything else - do not add delimiter or json or \\n in your reply - just a single object
   `;
 };
 
