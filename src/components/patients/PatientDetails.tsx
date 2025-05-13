@@ -140,7 +140,6 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
           <TabsList className="mb-4">
             <TabsTrigger value="details">Patient Details</TabsTrigger>
             <TabsTrigger value="appointments">Appointments</TabsTrigger>
-            <TabsTrigger value="medical">Medical History</TabsTrigger>
           </TabsList>
           
           <TabsContent value="details" className="space-y-6">
