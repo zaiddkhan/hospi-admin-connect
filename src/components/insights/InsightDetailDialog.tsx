@@ -26,7 +26,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
     SchedulingInsightCard,
     InventoryInsightCard,
-    RevenueInsightCard
+    RevenueInsightCard,
+    PatientInsightCard
 } from "@/components/insights/InsightCards";
 
 interface InsightDetailDialogProps {
@@ -81,6 +82,7 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
 
     const handleApply = async () => {
         try {
+            // Call the API with the insight ID
             const result = await applyInsight.mutateAsync(insight.id);
             setActionResult(result);
             setShowSuccess(true);
@@ -110,13 +112,13 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
 
     // Render the insight visualization based on category
     const renderInsightVisualization = () => {
-        if (!insight.title) return null;
+        if (!insight.data) return null;
 
         switch (insight.category) {
             case 'scheduling':
                 return (
                     <SchedulingInsightCard
-                        data={insight.scheduleData}
+                        data={insight.data}
                         onApply={handleApply}
                     />
                 );
@@ -130,7 +132,14 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
             case 'revenue':
                 return (
                     <RevenueInsightCard
-                        data={insight.revenueInsightData}
+                        data={insight.data}
+                        onApply={handleApply}
+                    />
+                );
+            case 'patients':
+                return (
+                    <PatientInsightCard
+                        data={insight.data}
                         onApply={handleApply}
                     />
                 );
@@ -174,23 +183,16 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
 
                             {renderInsightVisualization()}
 
-                            {insight.implementation_details ? (
-                                Array.isArray(insight.implementation_details) && insight.implementation_details.length > 0 ? (
-                                    <div className="mt-4 p-4 bg-muted rounded-md">
-                                        <h3 className="font-medium mb-2">Changes to be made:</h3>
-                                        <ul className="list-disc pl-5 space-y-1">
-                                            {insight.implementation_details.map((detail, idx) => (
-                                                <li key={idx}>{detail}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ) : (
-                                    <p>No implementation details available.</p> // Message when the array is empty
-                                )
-                            ) : (
-                                <p>No implementation details found.</p> // Message when it's null or undefined
+                            {insight.implementation_details && insight.implementation_details.length > 0 && (
+                                <div className="mt-4 p-4 bg-muted rounded-md">
+                                    <h3 className="font-medium mb-2">Changes to be made:</h3>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        {insight.implementation_details.map((detail, idx) => (
+                                            <li key={idx}>{detail}</li>
+                                        ))}
+                                    </ul>
+                                </div>
                             )}
-
                         </div>
 
                         <DialogFooter className="gap-2">

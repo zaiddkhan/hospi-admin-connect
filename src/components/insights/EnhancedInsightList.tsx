@@ -5,13 +5,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Lightbulb, 
-  Calendar, 
-  Package2, 
-  TrendingUp, 
-  Users, 
-  Check, 
+import {
+  Lightbulb,
+  Calendar,
+  Package2,
+  TrendingUp,
+  Users,
+  Check,
   X,
   Eye
 } from "lucide-react";
@@ -38,15 +38,15 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
   const dismissInsight = useDismissInsight();
   const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  
+
   // Filter insights by category if needed
-  const filteredInsights = category === 'all' 
-    ? insights 
+  const filteredInsights = category === 'all'
+    ? insights
     : insights.filter(insight => insight.category === category);
 
   // Filter active insights (pending only)
   const activeInsights = filteredInsights.filter(insight => insight.status === 'pending');
-  
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'scheduling':
@@ -61,7 +61,7 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
         return <Lightbulb className="h-5 w-5 text-primary" />;
     }
   };
-  
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'scheduling':
@@ -76,7 +76,7 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
         return "bg-gray-100 text-gray-800";
     }
   };
-  
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -89,12 +89,16 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
         return "bg-muted";
     }
   };
-  
+
   const handleViewDetails = (insight: Insight) => {
     setSelectedInsight(insight);
     setDialogOpen(true);
   };
-  
+
+  const handleDialogSuccess = () => {
+    if (onRefresh) onRefresh();
+  };
+
   const handleDismiss = (insightId: string) => {
     dismissInsight.mutate(insightId, {
       onSuccess: () => {
@@ -103,11 +107,8 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
       }
     });
   };
-  
-  const handleDialogSuccess = () => {
-    if (onRefresh) onRefresh();
-  };
-  
+
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -182,24 +183,24 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
               )}
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => handleDismiss(insight.id)}
                 disabled={dismissInsight.isPending}
               >
                 <X className="h-4 w-4 mr-2" /> Dismiss
               </Button>
               <div className="space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => handleViewDetails(insight)}
                 >
                   <Eye className="h-4 w-4 mr-2" /> View Details
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onClick={() => handleViewDetails(insight)}
                 >
                   <Check className="h-4 w-4 mr-2" /> Apply
@@ -209,7 +210,7 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
           </Card>
         ))}
       </div>
-      
+
       <InsightDetailDialog
         insight={selectedInsight}
         isOpen={dialogOpen}

@@ -32,43 +32,56 @@ interface SchedulingInsightProps {
   onApply: () => void;
 }
 
-export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({ 
-  data, 
-  onApply 
-}) => {
+// src/components/insights/InsightCards.tsx - SchedulingInsightCard component
+export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({ data, onApply }) => {
   const navigate = useNavigate();
-  const formattedDate = format(new Date(data.date), "EEEE, MMMM d, yyyy");
+  const formattedDate = data.date ? format(new Date(data.date), "EEEE, MMMM d, yyyy") : "N/A";
 
-  const maxAppointments = Math.max(
-    ...data.currentSchedule.map(slot => slot.count),
-    ...data.suggestedSchedule.map(slot => slot.count)
-  );
+  const maxAppointments = data.currentSchedule && data.suggestedSchedule
+    ? Math.max(
+      ...data.currentSchedule.map(slot => slot.count || 0),
+      ...data.suggestedSchedule.map(slot => slot.count || 0)
+    )
+    : 0;
 
-  // Format time for display (convert from 24h to 12h format)
+  // Format time for display
   const formatTime = (time: string) => {
+    if (!time) return "N/A";
     const [hours, minutes] = time.split(':');
+    if (!hours || !minutes) return time;
+
     const hour = parseInt(hours, 10);
     const period = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour % 12 || 12;
     return `${displayHour}:${minutes} ${period}`;
   };
 
+  // Add data validation to prevent errors
+  if (!data || !data.currentSchedule || !data.suggestedSchedule) {
+    return (
+      <div className="p-4 bg-muted rounded-md">
+        <p className="text-muted-foreground">Scheduling data is not available or is incomplete.</p>
+      </div>
+    );
+  }
+
   return (
     <Card className="border-blue-200">
       <CardHeader className="bg-blue-50">
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-blue-600" />
-          Schedule Optimization for {data.doctorName}
+          Schedule Optimization for {data.doctorName || "Doctor"}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {formattedDate}
         </p>
       </CardHeader>
+
       <CardContent className="p-6 space-y-6">
         <div className="space-y-2">
           <h3 className="text-lg font-medium">Current vs. Suggested Schedule</h3>
           <p className="text-sm text-muted-foreground">
-            {data.redistributionReason || 
+            {data.redistributionReason ||
               "Based on patient waiting times and doctor availability, we suggest redistributing appointments to optimize the schedule."}
           </p>
         </div>
@@ -82,7 +95,7 @@ export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({
                 {data.currentSchedule.reduce((sum, slot) => sum + slot.count, 0)} Appointments
               </Badge>
             </div>
-            
+
             <div className="space-y-3">
               {data.currentSchedule.map((slot, index) => (
                 <div key={index} className="space-y-1">
@@ -94,8 +107,8 @@ export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({
                     <span className="text-sm">{slot.count} appointments</span>
                   </div>
                   <div className="w-full h-2 bg-muted overflow-hidden rounded-full">
-                    <div 
-                      className="h-full bg-blue-400 rounded-full" 
+                    <div
+                      className="h-full bg-blue-400 rounded-full"
                       style={{ width: `${(slot.count / maxAppointments) * 100}%` }}
                     ></div>
                   </div>
@@ -112,7 +125,7 @@ export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({
                 Optimized
               </Badge>
             </div>
-            
+
             <div className="space-y-3">
               {data.suggestedSchedule.map((slot, index) => (
                 <div key={index} className="space-y-1">
@@ -124,8 +137,8 @@ export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({
                     <span className="text-sm">{slot.count} appointments</span>
                   </div>
                   <div className="w-full h-2 bg-muted overflow-hidden rounded-full">
-                    <div 
-                      className="h-full bg-green-500 rounded-full" 
+                    <div
+                      className="h-full bg-green-500 rounded-full"
                       style={{ width: `${(slot.count / maxAppointments) * 100}%` }}
                     ></div>
                   </div>
@@ -141,8 +154,8 @@ export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({
             <h4 className="font-medium">Appointments to be Rescheduled:</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {data.appointments.map((apt, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex justify-between items-center p-2 rounded-md bg-blue-50 border border-blue-100"
                 >
                   <div>
@@ -166,8 +179,8 @@ export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex justify-between border-t p-4 bg-gray-50">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => navigate("/appointments")}
         >
           View Appointments

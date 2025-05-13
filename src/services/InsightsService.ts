@@ -1,6 +1,7 @@
 // src/services/insightsService.ts
 import api from './api';
 
+// src/services/InsightsService.ts
 export interface Insight {
   id: string;
   title: string;
@@ -12,34 +13,7 @@ export interface Insight {
   status: 'pending' | 'applied' | 'dismissed';
   created_at: string;
   updated_at: string;
-  data: {
-    itemsToRestock: Array<{ 
-      id: string;
-      name: string; 
-      currentStock: number;
-      suggestedStock: number;
-      unitPrice: number;
-    }>;
-    totalCost: number;
-    suggestedDate: string;
-    savingsPercentage: number;
-  };
-  scheduleData : {
-    date: string;
-    doctorName: string;
-    currentSchedule: Array<{ time: string; count: number }>;
-    suggestedSchedule: Array<{ time: string; count: number }>;
-    benefitText: string;
-  };
-  revenueInsightData : {
-    insights: Array<{ 
-      title: string;
-      description: string;
-      value: number;
-      change: number;
-    }>;
-    recommendations: string[];
-  }
+  data: any; // Generic data property that will contain different structures based on category
 }
 
 export interface InsightStats {
