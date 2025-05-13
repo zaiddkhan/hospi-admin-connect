@@ -1,3 +1,4 @@
+
 // Updated routing configuration for App.tsx
 // Import all necessary components including our new EnhancedInsights page
 import { Toaster } from "@/components/ui/toaster";
@@ -20,6 +21,7 @@ import Analytics from "@/pages/Analytics";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/auth/Login";
 import EnhancedInsights from "@/pages/EnhancedInsights"; // Import our new enhanced insights page
+import Profile from "@/pages/Profile"; // Import our new Profile page
 import { useEffect, useState } from "react";
 import UploadDoc from "./pages/UploadDoc";
 import DocAnalysis from "./pages/DocAnalaysis";
@@ -97,6 +99,7 @@ const App = () => {
             <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             
             {/* Enhanced Insights route */}
             <Route path="/insights" element={<ProtectedRoute><EnhancedInsights /></ProtectedRoute>} />
