@@ -155,8 +155,13 @@ const UploadDoc: React.FC = () => {
 
     try {
       // Send files for analysis
-      const analysisResult = await extractPDFText(files, comments);
+      const analysisResult = (await extractPDFText(files, comments)) as any;
       console.log("analysisResult :", analysisResult[0]);
+
+      if (analysisResult.error) {
+        toast.error("No text content found in the uploaded file");
+        return;
+      }
 
       const finalPrompt = await analyzeDocumentsPrompt(analysisResult[0]);
       console.log("finalPrompt :", finalPrompt);
@@ -286,7 +291,7 @@ const UploadDoc: React.FC = () => {
                       Select Files
                     </Button>
                     <p className="text-xs text-gray-400 mt-4">
-                      Accepted formats: PDF, DOC, DOCX, JPG, PNG (max{" "}
+                      Accepted format: PDF (max{" "}
                       {(MAX_FILE_SIZE / (1024 * 1024)).toFixed(0)}MB)
                     </p>
                   </>
