@@ -21,6 +21,8 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/auth/Login";
 import EnhancedInsights from "@/pages/EnhancedInsights"; // Import our new enhanced insights page
 import { useEffect, useState } from "react";
+import UploadDoc from "./pages/UploadDoc";
+import DocAnalysis from "./pages/DocAnalaysis";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient({
@@ -98,6 +100,8 @@ const App = () => {
             
             {/* Enhanced Insights route */}
             <Route path="/insights" element={<ProtectedRoute><EnhancedInsights /></ProtectedRoute>} />
+            <Route path="/upload" element={<ProtectedRoute><UploadDoc /></ProtectedRoute>} />
+            <Route path="/analysis" element={<ProtectedRoute><DocAnalysis /></ProtectedRoute>} />
             
             {/* Not found */}
             <Route path="*" element={<NotFound />} />

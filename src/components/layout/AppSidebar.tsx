@@ -12,7 +12,8 @@ import {
   Users,
   Lightbulb,
   FileText,
-  Newspaper // Added for medical research
+  Newspaper, // Added for medical research
+  Scan
 } from "lucide-react";
 import { 
   Sidebar, 
@@ -82,6 +83,11 @@ const NavLinks = [
     title: "AI Insights",
     icon: Lightbulb,
     path: "/insights"
+  }, 
+  {
+    title: "Document Reader",
+    icon: Scan,
+    path: "/upload"
   }
 ];
 
