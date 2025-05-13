@@ -9,7 +9,8 @@ import {
   Package2, 
   Settings,
   Users,
-  Lightbulb // Added for insights
+  Lightbulb, // Added for insights
+  Scan
 } from "lucide-react";
 import { 
   Sidebar, 
@@ -67,6 +68,11 @@ const NavLinks = [
     title: "AI Insights",
     icon: Lightbulb,
     path: "/insights"
+  }, 
+  {
+    title: "Document Reader",
+    icon: Scan,
+    path: "/upload"
   }
 ];
 

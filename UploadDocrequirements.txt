@@ -1,0 +1,4 @@
+1. I want to be able to upload my medical docs here (pdf for now)
+2. These docs will then be sent to a LLM to read and analyze
+3. And then it will be shown to the user on DocAnalysis.tsx 
+    Currently using static data which is in lib/text.json

@@ -1,0 +1,168 @@
+{
+  "patientInfo": {
+    "name": "Mr. Bhavesh Sanjay Singh",
+    "age": 37,
+    "gender": "Male",
+    "reportDate": "January 28, 2025",
+    "condition": "Type 2 Diabetes with Hypertension",
+    "deviceIntegration": {
+      "glucometer": "Connected",
+      "bpMonitor": "Connected",
+      "peakFlowMeter": "Not Connected"
+    }
+  },
+  "glucoseMonitoring": {
+    "fastingGlucose": {
+      "value": 126,
+      "unit": "mg/dL",
+      "status": "high",
+      "timestamp": "2025-01-28T06:30:00Z",
+      "trend": "increasing"
+    },
+    "postPrandialGlucose": {
+      "value": 185,
+      "unit": "mg/dL",
+      "status": "high",
+      "timestamp": "2025-01-28T09:30:00Z",
+      "trend": "stable"
+    },
+    "hba1c": {
+      "value": 7.2,
+      "unit": "%",
+      "status": "high",
+      "lastChecked": "2025-01-15"
+    },
+    "dailyReadings": [
+      { "time": "06:30", "value": 126, "note": "Fasting" },
+      { "time": "09:30", "value": 185, "note": "After breakfast" },
+      { "time": "14:00", "value": 145, "note": "Before lunch" },
+      { "time": "17:00", "value": 160, "note": "After lunch" }
+    ],
+    "impression": "Blood glucose levels are consistently above target range. HbA1c indicates suboptimal glycemic control over the past 3 months."
+  },
+  "bloodPressureMonitoring": {
+    "morningReading": {
+      "systolic": {
+        "value": 142,
+        "unit": "mmHg",
+        "status": "high"
+      },
+      "diastolic": {
+        "value": 88,
+        "unit": "mmHg",
+        "status": "normal"
+      },
+      "heartRate": {
+        "value": 76,
+        "unit": "bpm",
+        "status": "normal"
+      },
+      "timestamp": "2025-01-28T07:00:00Z"
+    },
+    "eveningReading": {
+      "systolic": {
+        "value": 138,
+        "unit": "mmHg",
+        "status": "high"
+      },
+      "diastolic": {
+        "value": 85,
+        "unit": "mmHg",
+        "status": "normal"
+      },
+      "heartRate": {
+        "value": 72,
+        "unit": "bpm",
+        "status": "normal"
+      },
+      "timestamp": "2025-01-28T19:00:00Z"
+    },
+    "weeklyAverage": {
+      "systolic": 140,
+      "diastolic": 86,
+      "status": "high"
+    },
+    "impression": "Systolic blood pressure remains elevated despite medication. Diastolic pressure is within normal range."
+  },
+  "medicationAdherence": {
+    "medications": [
+      {
+        "name": "Metformin",
+        "dosage": "1000mg",
+        "frequency": "Twice daily",
+        "adherence": "90%",
+        "status": "good"
+      },
+      {
+        "name": "Amlodipine",
+        "dosage": "5mg",
+        "frequency": "Once daily",
+        "adherence": "85%",
+        "status": "good"
+      }
+    ],
+    "lastRefill": "2025-01-15",
+    "nextRefill": "2025-02-15",
+    "impression": "Good medication adherence overall. Patient occasionally misses evening dose of Metformin."
+  },
+  "lifestyleMetrics": {
+    "physicalActivity": {
+      "dailySteps": 6500,
+      "weeklyAverage": 6200,
+      "status": "below_target",
+      "target": 8000
+    },
+    "diet": {
+      "carbIntake": "moderate",
+      "saltIntake": "high",
+      "adherenceToMealPlan": "75%"
+    },
+    "sleep": {
+      "averageHours": 7,
+      "quality": "good"
+    },
+    "impression": "Physical activity below recommended levels. Diet shows room for improvement, particularly in salt intake."
+  },
+  "labResults": {
+    "lipidPanel": {
+      "totalCholesterol": {
+        "value": 185,
+        "unit": "mg/dL",
+        "status": "normal"
+      },
+      "ldl": {
+        "value": 110,
+        "unit": "mg/dL",
+        "status": "normal"
+      },
+      "hdl": {
+        "value": 45,
+        "unit": "mg/dL",
+        "status": "low"
+      },
+      "triglycerides": {
+        "value": 150,
+        "unit": "mg/dL",
+        "status": "normal"
+      }
+    },
+    "kidneyFunction": {
+      "creatinine": {
+        "value": 1.0,
+        "unit": "mg/dL",
+        "status": "normal"
+      },
+      "egfr": {
+        "value": 98,
+        "unit": "mL/min/1.73m²",
+        "status": "normal"
+      }
+    }
+  },
+  "riskAssessment": {
+    "cardiovascularRisk": "moderate",
+    "diabeticComplications": "low",
+    "nextCheckupDue": "2025-02-28"
+  },
+  "overallImpression": "Patient shows suboptimal control of both diabetes and hypertension. While medication adherence is good, lifestyle modifications are needed, particularly in physical activity and dietary sodium intake. Blood glucose and systolic blood pressure trends indicate need for potential treatment adjustment. Recommend scheduling follow-up visit to discuss medication adjustments and lifestyle interventions."
+}
