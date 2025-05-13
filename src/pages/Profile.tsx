@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { User, Mail, Id } from 'lucide-react';
+import { User, Mail, BadgeCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Profile = () => {
@@ -86,7 +86,7 @@ const Profile = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2 text-sm">
-                  <Id className="h-4 w-4 text-muted-foreground" />
+                  <BadgeCheck className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">User ID:</span>
                   <span className="font-mono">{profile.id}</span>
                 </div>
