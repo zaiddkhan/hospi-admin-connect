@@ -1,6 +1,6 @@
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { 
   Calendar, 
   MessageCircle, 
@@ -12,7 +12,7 @@ import {
   Users,
   Lightbulb,
   FileText,
-  Newspaper, // Added for medical research
+  Newspaper,
   Scan
 } from "lucide-react";
 import { 
@@ -92,6 +92,8 @@ const NavLinks = [
 ];
 
 const AppSidebar = () => {
+  const location = useLocation();
+  
   return (
     <Sidebar className="border-r">
       <SidebarHeader className="p-4">
@@ -125,10 +127,12 @@ const AppSidebar = () => {
                       <NavLink 
                         to={link.path}
                         className={({ isActive }) => 
-                          isActive ? "text-sidebar-primary" : "text-sidebar-foreground"
+                          isActive 
+                            ? "flex items-center gap-2 px-2 py-1.5 rounded-md bg-primary/10 text-primary font-medium"
+                            : "flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-foreground hover:bg-sidebar-hover"
                         }
                       >
-                        <link.icon className="h-4 w-4" />
+                        <link.icon className={`h-4 w-4 ${location.pathname === link.path ? 'text-primary' : ''}`} />
                         <span>{link.title}</span>
                       </NavLink>
                     )}
@@ -142,8 +146,15 @@ const AppSidebar = () => {
 
       <SidebarFooter className="p-4">
         <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
-          <NavLink to="/settings">
-            <Settings className="h-4 w-4 mr-2" />
+          <NavLink 
+            to="/settings"
+            className={({ isActive }) => 
+              isActive 
+                ? "text-primary font-medium"
+                : ""
+            }
+          >
+            <Settings className={`h-4 w-4 mr-2 ${location.pathname === '/settings' ? 'text-primary' : ''}`} />
             Settings
           </NavLink>
         </Button>
