@@ -47,11 +47,11 @@ const UpcomingAppointments = () => {
               <li key={appointment.id} className="p-4">
                 <div className="flex items-center space-x-4">
                   <Avatar className={getAvatarColor(appointment.type)}>
-                    <AvatarImage src="https://github.com/shadcn.png" alt={appointment.patient_id} />
-                    <AvatarFallback>{appointment.patient_id?.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src="https://github.com/shadcn.png" alt={appointment.patients.name} />
+                    <AvatarFallback>{appointment.patients.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">{appointment.patient_id}</p>
+                    <p className="text-sm font-medium leading-none">{appointment.patients.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {format(new Date(appointment.date), "MMM dd, yyyy")} at {appointment.time}
                     </p>
