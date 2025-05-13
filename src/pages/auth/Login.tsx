@@ -94,7 +94,7 @@ const Login = () => {
                 )}
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-2">
+            {/* <CardFooter className="flex flex-col gap-2">
               <Button 
                 type="submit" 
                 className="w-full" 
@@ -108,7 +108,7 @@ const Login = () => {
                   Sign up
                 </Button>
               </p>
-            </CardFooter>
+            </CardFooter> */}
           </form>
         </Card>
       </div>
