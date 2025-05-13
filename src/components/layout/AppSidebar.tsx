@@ -85,7 +85,7 @@ const NavLinks = [
     path: "/billing" 
   },
   {
-    title: "Medical document analysis",
+    title: "Medical Document Analysis",
     icon: Scan,
     path: "/upload"
   }
