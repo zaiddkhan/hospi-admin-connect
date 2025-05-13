@@ -50,7 +50,7 @@ const NavLinks = [
   {
     title: "Consultations",
     icon: FileText,
-    path: "https://hospiscribe.minusonetoten.com/new",
+    path: "https://hospiscribe.minusonetoten.com/consultation/new",
     external: true
   },
   { 

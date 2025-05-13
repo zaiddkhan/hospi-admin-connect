@@ -82,7 +82,7 @@ const Login = () => {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
                   <Button variant="link" size="sm" className="p-0 h-auto text-xs">
-                    Forgot password?
+                    {/* Forgot password? */}
                   </Button>
                 </div>
                 <Input
@@ -111,12 +111,12 @@ const Login = () => {
                   </>
                 )}
               </Button>
-              <p className="text-center text-sm text-muted-foreground mt-2">
+              {/* <p className="text-center text-sm text-muted-foreground mt-2">
                 Don't have an account?{" "}
                 <Button variant="link" className="p-0 h-auto text-sm">
                   Sign up
                 </Button>
-              </p>
+              </p> */}
             </CardFooter>
           </form>
         </Card>

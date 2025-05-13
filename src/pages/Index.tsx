@@ -23,7 +23,7 @@ const Index = () => {
   }, [error]);
 
   const handleStartConsultation = () => {
-    window.open("https://hospiscribe.minusonetoten.com/new", "_blank");
+    window.open("https://hospiscribe.minusonetoten.com/consultation/new", "_blank");
   };
   
   const handleMedicalResearch = () => {

@@ -84,9 +84,9 @@ const NewAppointment = () => {
   // Start consultation instead of normal appointment
   const handleStartConsultation = () => {
     if (patientId) {
-      window.open(`https://hospiscribe.minusonetoten.com/${patientId}`, "_blank");
+      window.open(`https://hospiscribe.minusonetoten.com/consultation/${patientId}`, "_blank");
     } else {
-      window.open("https://hospiscribe.minusonetoten.com/new", "_blank");
+      window.open("https://hospiscribe.minusonetoten.com/consultation/new", "_blank");
     }
   };
   
