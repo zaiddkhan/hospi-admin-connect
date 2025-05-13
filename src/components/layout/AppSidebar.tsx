@@ -51,7 +51,6 @@ const NavLinks = [
     title: "Consultations",
     icon: FileText,
     path: "https://hospiscribe.minusonetoten.com/consultation/new",
-    external: true
   },
   { 
     title: "Communications", 
@@ -72,7 +71,6 @@ const NavLinks = [
     title: "Medical Research",
     icon: Newspaper,
     path: "https://medsearch.minusonetoten.com/",
-    external: true
   },
   { 
     title: "Inventory", 
@@ -113,29 +111,19 @@ const AppSidebar = () => {
               {NavLinks.map((link) => (
                 <SidebarMenuItem key={link.path}>
                   <SidebarMenuButton asChild>
-                    {link.external ? (
-                      <a 
-                        href={link.path} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-foreground hover:bg-sidebar-hover"
-                      >
-                        <link.icon className="h-4 w-4" />
-                        <span>{link.title}</span>
-                      </a>
-                    ) : (
+                    {
                       <NavLink 
                         to={link.path}
                         className={({ isActive }) => 
                           isActive 
-                            ? "flex items-center gap-2 px-2 py-1.5 rounded-md bg-sidebar-accent text-primary font-medium"
+                            ? "flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-foreground font-medium bg:bg-sidebar-hover"
                             : "flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-foreground hover:bg-sidebar-hover"
                         }
                       >
-                        <link.icon className={`h-4 w-4 ${location.pathname === link.path ? 'text-primary' : ''}`} />
+                        <link.icon className={`h-4 w-4 ${location.pathname === link.path ? 'text-sidebar-foreground' : ''}`} />
                         <span>{link.title}</span>
                       </NavLink>
-                    )}
+                    }
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
