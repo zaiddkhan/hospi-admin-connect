@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import DatePicker from "@/components/ui/DatePicker";
 import {
   Select,
   SelectContent,
@@ -273,41 +274,19 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             )}
           </div>
 
-          {/* Date Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
-                  )}
-                  disabled={formIsSubmitting}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? (
-                    format(selectedDate, "PPP")
-                  ) : (
-                    <span>Select date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setDate}
-                  initialFocus
-                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                />
-              </PopoverContent>
-            </Popover>
-            {errors.date && (
-              <p className="text-xs text-error-500 mt-1">{errors.date.message}</p>
-            )}
-          </div>
+          {/* Date Selection - Using Enhanced DatePicker */}
+<DatePicker
+  label="Date"
+  value={selectedDate}
+  onChange={(date) => setDate(date)}
+  disabled={formIsSubmitting}
+  placeholder="Select date"
+  minDate={new Date(new Date().setHours(0, 0, 0, 0))} // Can't schedule in the past
+  allowFutureDates={true}
+  error={errors.date?.message}
+  required
+  yearRange={{ start: new Date().getFullYear(), end: new Date().getFullYear() + 2 }}
+/>
 
           {/* Time Selection */}
           <div className="space-y-2">

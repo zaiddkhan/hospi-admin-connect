@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Calendar as CalendarIcon, User, Mail, Phone, Home, FileText } from "lucide-react";
+import { User, Mail, Phone, Home, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Patient, PatientFormData } from "@/services/patientService";
+import DatePicker from "@/components/ui/DatePicker";
 
 // Validation schema for the form
 const patientSchema = z.object({
@@ -150,37 +145,17 @@ const PatientForm: React.FC<PatientFormProps> = ({
               )}
             </div>
 
-            {/* Birth Date */}
+            {/* Birth Date - Using our new DatePicker */}
             <div className="space-y-2">
-              <Label htmlFor="birth_date">Date of Birth</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !birthDate && "text-muted-foreground"
-                    )}
-                    disabled={isLoading}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {birthDate ? (
-                      format(birthDate, "PPP")
-                    ) : (
-                      <span>Select date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={birthDate}
-                    onSelect={setBirthDate}
-                    initialFocus
-                    disabled={(date) => date > new Date()}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker
+                label="Date of Birth"
+                value={birthDate}
+                onChange={setBirthDate}
+                disabled={isLoading}
+                placeholder="Select date of birth"
+                maxDate={new Date()} // Can't be born in the future
+                error={errors.birth_date?.message}
+              />
             </div>
 
             {/* Gender */}
