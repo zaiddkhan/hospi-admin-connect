@@ -95,7 +95,7 @@ const AppSidebar = () => {
   const location = useLocation();
   
   return (
-    <Sidebar className="border-r">
+    <Sidebar className="border-none">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2 px-2">
           <div className="bg-primary flex items-center justify-center w-8 h-8 rounded-md">
