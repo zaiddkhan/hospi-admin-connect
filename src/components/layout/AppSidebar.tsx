@@ -128,7 +128,7 @@ const AppSidebar = () => {
                         to={link.path}
                         className={({ isActive }) => 
                           isActive 
-                            ? "flex items-center gap-2 px-2 py-1.5 rounded-md bg-primary/10 text-primary font-medium"
+                            ? "flex items-center gap-2 px-2 py-1.5 rounded-md bg-white text-primary font-medium"
                             : "flex items-center gap-2 px-2 py-1.5 rounded-md text-sidebar-foreground hover:bg-sidebar-hover"
                         }
                       >
