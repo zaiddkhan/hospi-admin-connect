@@ -36,6 +36,12 @@ const NavLinks = [
     icon: Home, 
     path: "/" 
   },
+
+  { 
+    title: "Patients", 
+    icon: Users, 
+    path: "/patients" 
+  },
   { 
     title: "Appointments", 
     icon: Calendar, 
@@ -44,13 +50,7 @@ const NavLinks = [
   {
     title: "Consultations",
     icon: FileText,
-    path: "https://hospiagent.vercel.app/consultation/new",
-    external: true
-  },
-  {
-    title: "Medical Research",
-    icon: Newspaper,
-    path: "https://med-search-agent.vercel.app/",
+    path: "https://hospiscribe.minusonetoten.com/new",
     external: true
   },
   { 
@@ -59,14 +59,20 @@ const NavLinks = [
     path: "/communications" 
   },
   { 
-    title: "Patients", 
-    icon: Users, 
-    path: "/patients" 
+    title: "Analytics", 
+    icon: BarChart3, 
+    path: "/analytics" 
   },
-  { 
-    title: "Billing", 
-    icon: CreditCard, 
-    path: "/billing" 
+  {
+    title: "AI Insights",
+    icon: Lightbulb,
+    path: "/insights"
+  }, 
+  {
+    title: "Medical Research",
+    icon: Newspaper,
+    path: "https://medsearch.minusonetoten.com/",
+    external: true
   },
   { 
     title: "Inventory", 
@@ -74,18 +80,12 @@ const NavLinks = [
     path: "/inventory" 
   },
   { 
-    title: "Analytics", 
-    icon: BarChart3, 
-    path: "/analytics" 
+    title: "Billing", 
+    icon: CreditCard, 
+    path: "/billing" 
   },
-  // Add insights link to the sidebar
   {
-    title: "AI Insights",
-    icon: Lightbulb,
-    path: "/insights"
-  }, 
-  {
-    title: "Document Reader",
+    title: "Medical document analysis",
     icon: Scan,
     path: "/upload"
   }

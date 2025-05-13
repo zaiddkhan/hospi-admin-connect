@@ -23,11 +23,11 @@ const Index = () => {
   }, [error]);
 
   const handleStartConsultation = () => {
-    window.open("https://hospiagent.vercel.app/consultation/new", "_blank");
+    window.open("https://hospiscribe.minusonetoten.com/new", "_blank");
   };
   
   const handleMedicalResearch = () => {
-    window.open("https://med-search-agent.vercel.app/", "_blank");
+    window.open("https://medsearch.minusonetoten.com/", "_blank");
   };
 
   return (

@@ -72,7 +72,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
   // Handle starting consultation for this patient
   const handleStartConsultation = () => {
     if (patient) {
-      window.open(`https://hospiagent.vercel.app/consultation/${patient.id}`, "_blank");
+      window.open(`https://hospiscribe.minusonetoten.com/${patient.id}`, "_blank");
     }
   };
 
