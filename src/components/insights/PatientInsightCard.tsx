@@ -47,6 +47,7 @@ export const PatientInsightCard: React.FC<PatientInsightProps> = ({
 
   // Get initials for avatar
   const getInitials = (name: string) => {
+    if (!name) return "P";
     return name
       .split(" ")
       .map((n) => n[0])
@@ -56,8 +57,22 @@ export const PatientInsightCard: React.FC<PatientInsightProps> = ({
 
   // Format date for display
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "MMM d, yyyy");
+    if (!dateString) return "N/A";
+    try {
+      return format(new Date(dateString), "MMM d, yyyy");
+    } catch (error) {
+      return dateString;
+    }
   };
+
+  // Handle missing data
+  if (!data) {
+    return (
+      <div className="p-4 bg-muted rounded-md">
+        <p className="text-muted-foreground">Patient data is not available.</p>
+      </div>
+    );
+  }
 
   return (
     <Card className="border-orange-200">
@@ -167,12 +182,12 @@ export const PatientInsightCard: React.FC<PatientInsightProps> = ({
                         </td>
                         <td className="px-4 py-3 text-sm border-t">
                           {isOverdue ? (
-                            <Badge className="bg-red-100 text-red-800 border-red-200">
+                            <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
                               <AlertCircle className="h-3 w-3 mr-1" />
                               Overdue
                             </Badge>
                           ) : (
-                            <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                            <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
                               Due Soon
                             </Badge>
                           )}

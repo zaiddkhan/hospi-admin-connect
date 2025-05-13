@@ -50,13 +50,13 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'scheduling':
-        return <Calendar className="h-5 w-5 text-primary" />;
+        return <Calendar className="h-5 w-5 text-blue-600" />;
       case 'inventory':
-        return <Package2 className="h-5 w-5 text-primary" />;
+        return <Package2 className="h-5 w-5 text-green-600" />;
       case 'revenue':
-        return <TrendingUp className="h-5 w-5 text-primary" />;
+        return <TrendingUp className="h-5 w-5 text-purple-600" />;
       case 'patients':
-        return <Users className="h-5 w-5 text-primary" />;
+        return <Users className="h-5 w-5 text-orange-600" />;
       default:
         return <Lightbulb className="h-5 w-5 text-primary" />;
     }
@@ -99,7 +99,8 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
     if (onRefresh) onRefresh();
   };
 
-  const handleDismiss = (insightId: string) => {
+  const handleDismiss = (insightId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening the dialog
     dismissInsight.mutate(insightId, {
       onSuccess: () => {
         toast.success("Insight dismissed");
@@ -153,7 +154,11 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
     <>
       <div className="space-y-4">
         {activeInsights.map((insight) => (
-          <Card key={insight.id} className="card-hover">
+          <Card 
+            key={insight.id} 
+            className="card-hover cursor-pointer"
+            onClick={() => handleViewDetails(insight)}
+          >
             <CardHeader className="flex flex-row items-center justify-between py-4">
               <div className="flex items-center gap-3">
                 {getCategoryIcon(insight.category)}
@@ -186,7 +191,7 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleDismiss(insight.id)}
+                onClick={(e) => handleDismiss(insight.id, e)}
                 disabled={dismissInsight.isPending}
               >
                 <X className="h-4 w-4 mr-2" /> Dismiss
@@ -195,13 +200,19 @@ const EnhancedInsightList: React.FC<EnhancedInsightListProps> = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleViewDetails(insight)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails(insight);
+                  }}
                 >
                   <Eye className="h-4 w-4 mr-2" /> View Details
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => handleViewDetails(insight)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails(insight);
+                  }}
                 >
                   <Check className="h-4 w-4 mr-2" /> Apply
                 </Button>

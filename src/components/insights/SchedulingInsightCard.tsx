@@ -32,8 +32,7 @@ interface SchedulingInsightProps {
   onApply: () => void;
 }
 
-// src/components/insights/InsightCards.tsx - SchedulingInsightCard component
-export const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({ data, onApply }) => {
+const SchedulingInsightCard: React.FC<SchedulingInsightProps> = ({ data, onApply }) => {
   const navigate = useNavigate();
   const formattedDate = data.date ? format(new Date(data.date), "EEEE, MMMM d, yyyy") : "N/A";
 

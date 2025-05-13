@@ -23,12 +23,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-    SchedulingInsightCard,
-    InventoryInsightCard,
-    RevenueInsightCard,
-    PatientInsightCard
-} from "@/components/insights/InsightCards";
+import SchedulingInsightCard from "@/components/insights/SchedulingInsightCard";
+import InventoryInsightCard from "@/components/insights/InventoryInsightCard";
+import RevenueInsightCard from "@/components/insights/RevenueInsightCard";
+import PatientInsightCard from "@/components/insights/PatientInsightCard";
+import { toast } from "sonner";
 
 interface InsightDetailDialogProps {
     insight: Insight | null;
@@ -86,6 +85,8 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
             const result = await applyInsight.mutateAsync(insight.id);
             setActionResult(result);
             setShowSuccess(true);
+            
+            toast.success(`The ${insight.category} insight has been successfully applied`);
 
             // Call success callback if provided
             if (onSuccess) {
@@ -93,6 +94,24 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
             }
         } catch (error) {
             console.error('Error applying insight:', error);
+            // Check for specific error messages
+            const errorMessage = error?.response?.data?.message || 
+                                 error?.message || 
+                                 "Failed to apply insight. Please try again.";
+            
+            // If there's a message about a missing function, show a more helpful error
+            if (errorMessage.includes("Could not find the function") || 
+                errorMessage.includes("apply_scheduling_insight") ||
+                errorMessage.includes("apply_inventory_insight") ||
+                errorMessage.includes("apply_revenue_insight") ||
+                errorMessage.includes("apply_patient_insight")) {
+                toast.error("Backend integration is not complete. Please check with your administrator.");
+            } else {
+                toast.error(errorMessage);
+            }
+            
+            // Close the dialog on error
+            onOpenChange(false);
         }
     };
 
@@ -100,6 +119,8 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
         try {
             await dismissInsight.mutateAsync(insight.id);
             onOpenChange(false);
+            
+            toast.success("Insight dismissed");
 
             // Call success callback if provided
             if (onSuccess) {
@@ -107,6 +128,7 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
             }
         } catch (error) {
             console.error('Error dismissing insight:', error);
+            toast.error("Failed to dismiss insight. Please try again.");
         }
     };
 
@@ -144,7 +166,53 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
                     />
                 );
             default:
-                return null;
+                return (
+                    <div className="p-4 bg-muted rounded-md">
+                        <p className="text-muted-foreground">No detailed view available for this insight type.</p>
+                    </div>
+                );
+        }
+    };
+
+    // Format changes based on insight category
+    const formatChanges = (changes: any[], category: string) => {
+        if (!changes || !Array.isArray(changes) || changes.length === 0) {
+            return <p>No specific changes were made.</p>;
+        }
+
+        switch (category) {
+            case 'scheduling':
+                return changes.map((change, idx) => (
+                    <li key={idx}>
+                        Rescheduled appointment for {change.patient_name} from {change.old_time} to {change.new_time}
+                    </li>
+                ));
+            case 'inventory':
+                return changes.map((change, idx) => (
+                    <li key={idx}>
+                        {change.action === 'create_order' 
+                            ? `Created purchase order #${change.purchase_order_id} with ${change.items_count} items totaling ₹${change.total_amount?.toLocaleString()}`
+                            : `Updated stock level for ${change.item_name} from ${change.old_stock} to ${change.new_stock}`}
+                    </li>
+                ));
+            case 'revenue':
+                return changes.map((change, idx) => (
+                    <li key={idx}>
+                        {change.service_name 
+                            ? `Updated price for ${change.service_name} from ₹${change.old_price} to ₹${change.new_price}`
+                            : `Created billing campaign "${change.campaign_name}" targeting ${change.target_count} patients`}
+                    </li>
+                ));
+            case 'patients':
+                return changes.map((change, idx) => (
+                    <li key={idx}>
+                        {change.appointment_id 
+                            ? `Scheduled follow-up for ${change.patient_name} on ${new Date(change.date).toLocaleDateString()}`
+                            : `Created health reminder for ${change.check_type || 'check-up'} due on ${new Date(change.due_date).toLocaleDateString()}`}
+                    </li>
+                ));
+            default:
+                return <li>Applied insight successfully</li>;
         }
     };
 
@@ -187,9 +255,11 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
                                 <div className="mt-4 p-4 bg-muted rounded-md">
                                     <h3 className="font-medium mb-2">Changes to be made:</h3>
                                     <ul className="list-disc pl-5 space-y-1">
-                                        {insight.implementation_details.map((detail, idx) => (
-                                            <li key={idx}>{detail}</li>
-                                        ))}
+                                        {Array.isArray(insight.implementation_details) && 
+                                            insight.implementation_details.map((detail, idx) => (
+                                                <li key={idx}>{detail}</li>
+                                            ))
+                                        }
                                     </ul>
                                 </div>
                             )}
@@ -242,56 +312,36 @@ const InsightDetailDialog: React.FC<InsightDetailDialogProps> = ({
                         </DialogHeader>
 
                         <div className="py-4">
-                            <Alert className="mb-4">
-                                <AlertTitle>Changes Applied</AlertTitle>
-                                <AlertDescription>
+                            <Alert className="mb-4 bg-green-50 border-green-200">
+                                <CheckCircle className="h-4 w-4 text-green-800" />
+                                <AlertTitle className="text-green-800">Changes Applied</AlertTitle>
+                                <AlertDescription className="text-green-700">
                                     {actionResult?.message || "The insight has been successfully applied."}
                                 </AlertDescription>
                             </Alert>
 
-                            {actionResult?.changes && actionResult.changes.length > 0 && (
-                                <div className="mt-4 p-4 bg-muted rounded-md">
-                                    <h3 className="font-medium mb-2">Applied Changes:</h3>
-                                    <ul className="list-disc pl-5 space-y-1">
-                                        {insight.category === 'scheduling' && actionResult.changes.map((change: any, idx: number) => (
-                                            <li key={idx}>
-                                                Rescheduled appointment for {change.patient_name} from {change.old_time} to {change.new_time}
-                                            </li>
-                                        ))}
-
-                                        {insight.category === 'inventory' && (
-                                            <li>
-                                                Created purchase order #{actionResult.purchase_order_id} with {actionResult.items_count} items
-                                                totaling ₹{actionResult.total_amount.toLocaleString()}
-                                            </li>
-                                        )}
-
-                                        {insight.category === 'revenue' && actionResult.changes.map((change: any, idx: number) => (
-                                            <li key={idx}>
-                                                {change.service_name ? (
-                                                    <>Updated price for {change.service_name} from ₹{change.old_price} to ₹{change.new_price}</>
-                                                ) : (
-                                                    <>Created billing campaign "{change.campaign_name}" targeting {change.target_count} patients</>
-                                                )}
-                                            </li>
-                                        ))}
-
-                                        {insight.category === 'patients' && actionResult.changes.map((change: any, idx: number) => (
-                                            <li key={idx}>
-                                                {change.appointment_id ? (
-                                                    <>Scheduled follow-up for {change.patient_name} on {new Date(change.date).toLocaleDateString()}</>
-                                                ) : (
-                                                    <>Created health reminder for {change.check_type} due on {new Date(change.due_date).toLocaleDateString()}</>
-                                                )}
-                                            </li>
-                                        ))}
+                            {actionResult?.result?.changes && 
+                             actionResult.result.changes.length > 0 && (
+                                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                                    <h3 className="font-medium mb-2 text-green-800">Applied Changes:</h3>
+                                    <ul className="list-disc pl-5 space-y-1 text-green-700">
+                                        {formatChanges(actionResult.result.changes, insight.category)}
                                     </ul>
+                                </div>
+                            )}
+                            
+                            {actionResult?.result?.insights && (
+                                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                                    <h3 className="font-medium mb-2 text-blue-800">New Insights Generated:</h3>
+                                    <p className="text-blue-700">
+                                        {actionResult.result.insights} new insight{actionResult.result.insights !== 1 ? 's' : ''} generated based on your action.
+                                    </p>
                                 </div>
                             )}
                         </div>
 
                         <DialogFooter>
-                            <Button onClick={() => onOpenChange(false)}>
+                            <Button onClick={() => onOpenChange(false)} className="bg-green-600 hover:bg-green-700">
                                 Close
                             </Button>
                         </DialogFooter>

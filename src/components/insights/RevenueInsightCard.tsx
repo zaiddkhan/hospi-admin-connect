@@ -51,6 +51,15 @@ export const RevenueInsightCard: React.FC<RevenueInsightProps> = ({
     })}`;
   };
 
+  // Verify data exists to prevent errors
+  if (!data || !data.insights || !Array.isArray(data.insights)) {
+    return (
+      <div className="p-4 bg-muted rounded-md">
+        <p className="text-muted-foreground">Revenue data is not available or is incomplete.</p>
+      </div>
+    );
+  }
+
   return (
     <Card className="border-purple-200">
       <CardHeader className="bg-purple-50">

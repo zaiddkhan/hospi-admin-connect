@@ -1,7 +1,6 @@
-// src/services/insightsService.ts
+// src/services/InsightsService.ts
 import api from './api';
 
-// src/services/InsightsService.ts
 export interface Insight {
   id: string;
   title: string;
@@ -23,6 +22,17 @@ export interface InsightStats {
   inventoryInsights: number;
   revenueInsights: number;
   patientsInsights: number;
+}
+
+export interface InsightApplicationResult {
+  message: string;
+  insight: Insight;
+  result: {
+    changes?: any[];
+    insights?: number;
+    applicationId?: string;
+    applicationTime?: string;
+  };
 }
 
 export const insightsAPI = {
@@ -56,7 +66,7 @@ export const insightsAPI = {
     }
   },
 
-  applyInsight: async (id: string): Promise<any> => {
+  applyInsight: async (id: string): Promise<InsightApplicationResult> => {
     try {
       const response = await api.post(`/insights/${id}/apply`);
       return response.data;

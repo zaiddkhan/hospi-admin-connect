@@ -37,14 +37,35 @@ export const useApplyInsight = () => {
   
   return useMutation({
     mutationFn: (id: string) => insightsAPI.applyInsight(id),
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate relevant queries to update the UI
       queryClient.invalidateQueries({ queryKey: ['insights'] });
       queryClient.invalidateQueries({ queryKey: ['insights', 'stats'] });
+      
+      // Based on the insight category, invalidate other relevant queries
+      const category = data?.insight?.category;
+      if (category === 'scheduling') {
+        queryClient.invalidateQueries({ queryKey: ['appointments'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+      } else if (category === 'inventory') {
+        queryClient.invalidateQueries({ queryKey: ['inventory'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+      } else if (category === 'revenue') {
+        queryClient.invalidateQueries({ queryKey: ['billing'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+      } else if (category === 'patients') {
+        queryClient.invalidateQueries({ queryKey: ['patients'] });
+        queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      }
+      
+      // Return the data for further processing
+      return data;
     },
     onError: (error: any) => {
       console.error('Error applying insight:', error);
-      toast.error(error?.response?.data?.message || 'Failed to apply insight');
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to apply insight';
+      toast.error(errorMessage);
+      throw error;
     },
   });
 };
