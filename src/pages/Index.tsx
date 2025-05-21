@@ -1,6 +1,7 @@
 import React from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import StatCard from "@/components/dashboard/StatCard";
+import DemoBanner from "@/components/dashboard/DemoBanner";
 import { Calendar, Users, CreditCard, Clock, FileText, Newspaper } from "lucide-react";
 import AppointmentsOverview from "@/components/dashboard/AppointmentsOverview";
 import RevenueChart from "@/components/dashboard/RevenueChart";
@@ -25,7 +26,7 @@ const Index = () => {
   const handleStartConsultation = () => {
     window.open("https://hospiscribe.minusonetoten.com/consultation/new", "_blank");
   };
-  
+
   const handleMedicalResearch = () => {
     window.open("https://medsearch.minusonetoten.com/", "_blank");
   };
@@ -33,6 +34,9 @@ const Index = () => {
   return (
     <AppLayout>
       <div className="space-y-3">
+
+        <DemoBanner />
+        <br />
         <div className="flex justify-between items-center">
           <div>
             <h1 className="page-title">Dashboard</h1>
@@ -93,7 +97,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <AppointmentsOverview />
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <RevenueChart />
         </div>
