@@ -97,7 +97,7 @@ const PatientAnalytics = () => {
           
           <div className="space-y-2">
             <h3 className="text-center font-medium">Appointment Types</h3>
-            <div className="h-[200px]">
+            <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

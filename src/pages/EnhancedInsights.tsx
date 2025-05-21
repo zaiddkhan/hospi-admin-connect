@@ -140,14 +140,14 @@ const EnhancedInsights = () => {
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="revenue">
+            {/* <TabsTrigger value="revenue">
               Revenue
               {insightCounts.revenue > 0 && (
                 <span className="ml-2 bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-xs">
                   {insightCounts.revenue}
                 </span>
               )}
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger value="patients">
               Patients
               {insightCounts.patients > 0 && (
@@ -189,7 +189,7 @@ const EnhancedInsights = () => {
             />
           </TabsContent>
 
-          <TabsContent value="revenue" className="mt-4">
+          {/* <TabsContent value="revenue" className="mt-4">
             <EnhancedInsightList 
               insights={insights} 
               isLoading={isLoading} 
@@ -197,7 +197,7 @@ const EnhancedInsights = () => {
               category="revenue" 
               onRefresh={handleRefresh}
             />
-          </TabsContent>
+          </TabsContent> */}
           
           <TabsContent value="patients" className="mt-4">
             <EnhancedInsightList 

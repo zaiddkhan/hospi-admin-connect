@@ -16,28 +16,28 @@ import { Button } from "@/components/ui/button";
 
 // Mock data for revenue analytics
 const weeklyRevenue = [
-  { date: "Mon", revenue: 12500 },
-  { date: "Tue", revenue: 9800 },
-  { date: "Wed", revenue: 15200 },
-  { date: "Thu", revenue: 18700 },
-  { date: "Fri", revenue: 16500 },
-  { date: "Sat", revenue: 21000 },
-  { date: "Sun", revenue: 8500 },
+  { date: "Mon", csat: 100 },
+  { date: "Tue", csat: 98 },
+  { date: "Wed", csat: 52 },
+  { date: "Thu", csat: 87 },
+  { date: "Fri", csat: 65 },
+  { date: "Sat", csat: 21 },
+  { date: "Sun", csat: 85 },
 ];
 
 const monthlyRevenue = [
-  { date: "Jan", revenue: 280000 },
-  { date: "Feb", revenue: 320000 },
-  { date: "Mar", revenue: 310000 },
-  { date: "Apr", revenue: 350000 },
-  { date: "May", revenue: 390000 },
+  { date: "Jan", csat: 98 },
+  { date: "Feb", csat: 80 },
+  { date: "Mar", csat: 88 },
+  { date: "Apr", csat: 76},
+  { date: "May", csat: 87 },
 ];
 
 const RevenueMetrics = () => {
   return (
     <Card className="col-span-1 lg:col-span-3">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Revenue Metrics</CardTitle>
+        <CardTitle>Customer Satisfaction Metrics</CardTitle>
         <div className="space-x-2">
           <Button variant="outline" size="sm">
             Download PDF
@@ -67,12 +67,12 @@ const RevenueMetrics = () => {
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="date" />
-                  <YAxis tickFormatter={(value) => `₹${value / 1000}k`} />
-                  <Tooltip formatter={(value) => [`₹${value}`, "Revenue"]} />
+                  <YAxis tickFormatter={(value) => `${value}`} />
+                  <Tooltip formatter={(value) => [`${value}`, "CSAT"]} />
                   <Legend />
                   <Line
                     type="monotone"
-                    dataKey="revenue"
+                    dataKey="csat"
                     stroke="#1A7FFF"
                     strokeWidth={2}
                     dot={{ r: 4 }}
@@ -83,22 +83,22 @@ const RevenueMetrics = () => {
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">₹102,200</p>
+                <p className="text-sm text-muted-foreground">Total NPS</p>
+                <p className="text-2xl font-bold">50</p>
                 <p className="text-xs text-success-700">
                   ↑ 12% vs last week
                 </p>
               </div>
               <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground">Avg. Daily Revenue</p>
-                <p className="text-2xl font-bold">₹14,600</p>
+                <p className="text-sm text-muted-foreground">Avg. Daily NPS</p>
+                <p className="text-2xl font-bold">35</p>
                 <p className="text-xs text-success-700">
                   ↑ 5% vs last week
                 </p>
               </div>
               <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground">Revenue/Patient</p>
-                <p className="text-2xl font-bold">₹860</p>
+                <p className="text-sm text-muted-foreground">NPS/Patient</p>
+                <p className="text-2xl font-bold">34</p>
                 <p className="text-xs text-error-500">
                   ↓ 2% vs last week
                 </p>
@@ -119,12 +119,12 @@ const RevenueMetrics = () => {
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="date" />
-                  <YAxis tickFormatter={(value) => `₹${value / 1000}k`} />
-                  <Tooltip formatter={(value) => [`₹${value}`, "Revenue"]} />
+                  <YAxis tickFormatter={(value) => `${value}`} />
+                  <Tooltip formatter={(value) => [`${value}`, "CSAT"]} />
                   <Legend />
                   <Line
                     type="monotone"
-                    dataKey="revenue"
+                    dataKey="csat"
                     stroke="#1A7FFF"
                     strokeWidth={2}
                     dot={{ r: 4 }}
@@ -135,22 +135,22 @@ const RevenueMetrics = () => {
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">₹1,650,000</p>
+                <p className="text-sm text-muted-foreground">Total NPS</p>
+                <p className="text-2xl font-bold">66</p>
                 <p className="text-xs text-success-700">
                   ↑ 8% vs last month
                 </p>
               </div>
               <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground">Avg. Daily Revenue</p>
-                <p className="text-2xl font-bold">₹16,500</p>
+                <p className="text-sm text-muted-foreground">Avg. Daily NPS</p>
+                <p className="text-2xl font-bold">34</p>
                 <p className="text-xs text-success-700">
                   ↑ 7% vs last month
                 </p>
               </div>
               <div className="p-4 bg-secondary rounded-lg">
-                <p className="text-sm text-muted-foreground">Revenue/Patient</p>
-                <p className="text-2xl font-bold">₹825</p>
+                <p className="text-sm text-muted-foreground">NPS/Patient</p>
+                <p className="text-2xl font-bold">40</p>
                 <p className="text-xs text-success-700">
                   ↑ 3% vs last month
                 </p>

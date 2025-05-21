@@ -79,8 +79,9 @@ const Index = () => {
                 trend={dashboardStats?.totalPatients.trend}
               />
               <StatCard
-                title="Today's Revenue"
-                value={`₹${dashboardStats?.todayRevenue.amount.toLocaleString() || "0"}`}
+                title="Today's CSAT"
+                // value={`₹${dashboardStats?.todayRevenue.amount.toLocaleString() || "0"}`}
+                value = {"97%"}
                 icon={<CreditCard className="h-4 w-4" />}
                 trend={dashboardStats?.todayRevenue.trend}
               />

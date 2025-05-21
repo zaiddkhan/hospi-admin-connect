@@ -25,7 +25,7 @@ const Insights = () => {
             <TabsTrigger value="all">All Insights</TabsTrigger>
             <TabsTrigger value="scheduling">Scheduling</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
-            <TabsTrigger value="revenue">Revenue</TabsTrigger>
+            {/* <TabsTrigger value="revenue">Revenue</TabsTrigger> */}
             <TabsTrigger value="patients">Patients</TabsTrigger>
           </TabsList>
 
@@ -57,14 +57,14 @@ const Insights = () => {
             />
           </TabsContent>
 
-          <TabsContent value="revenue" className="mt-4">
+          {/* <TabsContent value="revenue" className="mt-4">
             <InsightsList 
               insights={insights} 
               isLoading={isLoading} 
               error={error}
               category="revenue" 
             />
-          </TabsContent>
+          </TabsContent> */}
           
           <TabsContent value="patients" className="mt-4">
             <InsightsList 

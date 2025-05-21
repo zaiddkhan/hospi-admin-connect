@@ -19,7 +19,7 @@ const RevenueChart = () => {
     return (
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Monthly Revenue</CardTitle>
+          <CardTitle>Monthly CSAT</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-[240px] w-full" />
@@ -32,11 +32,11 @@ const RevenueChart = () => {
     return (
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Monthly Revenue</CardTitle>
+          <CardTitle>Monthly CSAT</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[240px] w-full flex items-center justify-center">
-            <p className="text-muted-foreground">Failed to load revenue data</p>
+            <p className="text-muted-foreground">Failed to load CSAT score</p>
           </div>
         </CardContent>
       </Card>
@@ -46,7 +46,7 @@ const RevenueChart = () => {
   return (
     <Card className="col-span-3">
       <CardHeader>
-        <CardTitle>Monthly Revenue</CardTitle>
+        <CardTitle>Monthly CSAT</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[240px]">
@@ -65,9 +65,9 @@ const RevenueChart = () => {
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `₹${value / 1000}k`}
+                tickFormatter={(value) => `${value}`}
               />
-              <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, "Revenue"]} />
+              <Tooltip formatter={(value) => [`${value.toLocaleString()}`, "CSAT"]} />
               <Bar dataKey="revenue" fill="#4CD964" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
