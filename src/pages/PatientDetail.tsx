@@ -33,7 +33,7 @@ const PatientDetail = () => {
     error,
     refetch 
   } = usePatient(id);
-  
+  console.log("Patient Data: ", patient);
   // Hooks for mutations
   const updatePatient = useUpdatePatient();
   const deletePatient = useDeletePatient();
