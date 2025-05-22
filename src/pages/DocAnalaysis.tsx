@@ -143,7 +143,7 @@ const TestResult: React.FC<{
   );
 };
 
-const DocAnalysis: React.FC = () => {
+const DocAnalysis: React.FC<{ patientId: string }> = ({ patientId }) => {
   const navigate = useNavigate();
   const [analysisData, setAnalysisData] = useState<any>(null);
 
@@ -153,6 +153,10 @@ const DocAnalysis: React.FC = () => {
       const cleanedData = cleanAnalysisData(rawData);
       setAnalysisData(JSON.parse(cleanedData));
     }
+
+    const rawDataPatient = JSON.parse(localStorage.getItem("selectedPatient"));
+
+    // post request here
   }, []);
 
   if (!analysisData) return null;
@@ -169,21 +173,14 @@ const DocAnalysis: React.FC = () => {
     overallImpression,
   } = analysisData;
 
-  return (
-    <AppLayout>
+  // For calling in Patient detail component
+  if (patientId)
+    return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/upload")}
-                  className="flex items-center gap-2 hover:bg-gray-50"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back
-                </Button>
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">
                     {procedureDetails?.testType || "Medical Report"}
@@ -207,33 +204,33 @@ const DocAnalysis: React.FC = () => {
 
         <main className="container mx-auto px-4 py-8">
           <div className="grid gap-6 max-w-7xl mx-auto">
-            <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200 bg-indigo-50/50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="bg-indigo-100 p-3 rounded-full">
-                    <User className="h-6 w-6 text-indigo-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-indigo-900">
-                      {patientIdentification?.name}
-                    </h2>
-                    <p className="text-indigo-700">
-                      {patientIdentification?.age} years •{" "}
-                      {patientIdentification?.gender}
-                      {patientIdentification?.medicalRecordNumber &&
-                        ` • MRN: ${patientIdentification.medicalRecordNumber}`}
-                    </p>
-                  </div>
+            {/* <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200 bg-indigo-50/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="bg-indigo-100 p-3 rounded-full">
+                  <User className="h-6 w-6 text-indigo-600" />
                 </div>
-                <div className="grid grid-cols-3 gap-4">
-                  {Object.entries(deviceIntegration || {}).map(
-                    ([device, status]) => (
-                      <DeviceStatus key={device} status={status as string} />
-                    )
-                  )}
+                <div>
+                  <h2 className="text-xl font-semibold text-indigo-900">
+                    {patientIdentification?.name}
+                  </h2>
+                  <p className="text-indigo-700">
+                    {patientIdentification?.age} years •{" "}
+                    {patientIdentification?.gender}
+                    {patientIdentification?.medicalRecordNumber &&
+                      ` • MRN: ${patientIdentification.medicalRecordNumber}`}
+                  </p>
                 </div>
               </div>
-            </Card>
+              <div className="grid grid-cols-3 gap-4">
+                {Object.entries(deviceIntegration || {}).map(
+                  ([device, status]) => (
+                    <DeviceStatus key={device} status={status as string} />
+                  )
+                )}
+              </div>
+            </div>
+          </Card> */}
 
             <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
               <div className="flex items-center gap-3 mb-6">
@@ -391,7 +388,234 @@ const DocAnalysis: React.FC = () => {
           </div>
         </main>
       </div>
-    </AppLayout>
+    );
+
+  return (
+    <>
+      <AppLayout>
+        <div className="min-h-screen bg-gray-50">
+          <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/upload")}
+                    className="flex items-center gap-2 hover:bg-gray-50"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900">
+                      {procedureDetails?.testType || "Medical Report"}
+                    </h1>
+                    <p className="text-sm text-gray-500">
+                      Generated:{" "}
+                      {dateAndTime?.reportGenerated || "Not available"}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2 hover:bg-gray-50"
+                >
+                  <FileText className="h-4 w-4" />
+                  Export Report
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <main className="container mx-auto px-4 py-8">
+            <div className="grid gap-6 max-w-7xl mx-auto">
+              <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200 bg-indigo-50/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-indigo-100 p-3 rounded-full">
+                      <User className="h-6 w-6 text-indigo-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-indigo-900">
+                        {patientIdentification?.name}
+                      </h2>
+                      <p className="text-indigo-700">
+                        {patientIdentification?.age} years •{" "}
+                        {patientIdentification?.gender}
+                        {patientIdentification?.medicalRecordNumber &&
+                          ` • MRN: ${patientIdentification.medicalRecordNumber}`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    {Object.entries(deviceIntegration || {}).map(
+                      ([device, status]) => (
+                        <DeviceStatus key={device} status={status as string} />
+                      )
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-blue-50 p-2 rounded-full">
+                    <Microscope className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Procedure Details</h3>
+                </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">
+                      Test Type
+                    </span>
+                    <p className="font-medium mt-1">
+                      {procedureDetails?.testType}
+                    </p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <span className="text-sm font-medium text-gray-500">
+                      Methodology
+                    </span>
+                    <p className="font-medium mt-1">
+                      {procedureDetails?.methodology}
+                    </p>
+                  </div>
+                  <div className="md:col-span-3">
+                    <span className="text-sm font-medium text-gray-500">
+                      Equipment
+                    </span>
+                    <p className="font-medium mt-1">
+                      {procedureDetails?.equipmentUsed}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200 bg-blue-50/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <TrendingUp className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-blue-900">
+                      Interpretation
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    {interpretation?.significantFindings && (
+                      <div className="prose prose-sm max-w-none">
+                        <p className="text-blue-800 leading-relaxed">
+                          {interpretation.significantFindings}
+                        </p>
+                      </div>
+                    )}
+                    {recommendations?.additionalTesting && (
+                      <div className="pt-4 mt-4 border-t border-blue-200">
+                        <p className="text-sm font-medium text-blue-900 mb-2">
+                          Recommendations
+                        </p>
+                        <div className="prose prose-sm max-w-none">
+                          <p className="text-blue-800 leading-relaxed">
+                            {recommendations.additionalTesting}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200 bg-amber-50/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-amber-100 p-2 rounded-full">
+                      <AlertTriangle className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-amber-900">
+                      Authentication
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-medium text-amber-800">
+                        Authorized by
+                      </p>
+                      <p className="font-medium text-amber-900">
+                        {authentication?.providerSignature}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-medium text-amber-800">
+                        Credentials
+                      </p>
+                      <p className="font-medium text-amber-900">
+                        {authentication?.credentials}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-50 p-2 rounded-full">
+                      <FileText className="h-5 w-5 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold">Test Results</h3>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-100 border border-green-200"></div>
+                      <span>Normal</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-yellow-100 border border-yellow-200"></div>
+                      <span>Low</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-100 border border-red-200"></div>
+                      <span>High</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid gap-4">
+                  {findingsAndResults?.otherMeasurements?.map((test, index) => (
+                    <TestResult
+                      key={index}
+                      test={test?.test || test?.testName}
+                      result={test.result || test.value}
+                      unit={test.unit}
+                      referenceRange={test.referenceRange}
+                    />
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-6 shadow-sm hover:shadow-md transition-shadow duration-200 bg-emerald-50/50">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-emerald-100 p-2 rounded-full">
+                    <Activity className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-emerald-900">
+                    Overall Assessment
+                  </h3>
+                </div>
+                <div className="prose prose-sm max-w-none">
+                  {overallImpression ? (
+                    <p className="text-emerald-800 leading-relaxed">
+                      {overallImpression}
+                    </p>
+                  ) : (
+                    <EmptyState />
+                  )}
+                </div>
+              </Card>
+            </div>
+          </main>
+        </div>
+      </AppLayout>
+    </>
   );
 };
 

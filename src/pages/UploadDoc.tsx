@@ -36,6 +36,14 @@ import {
   MAX_FILE_SIZE,
   MAX_FILES,
 } from "@/lib/utils";
+import { patientAPI } from "@/services/patientService";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const UploadDoc: React.FC = () => {
   const navigate = useNavigate();
@@ -43,6 +51,8 @@ const UploadDoc: React.FC = () => {
   const [files, setFiles] = useState([]);
   const [comments, setComments] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [patients, setPatients] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState("");
   const fileInputRef = useRef(null);
 
   // Handle drag events
@@ -151,6 +161,11 @@ const UploadDoc: React.FC = () => {
       return;
     }
 
+    if (patients.length === 0) {
+      toast.error("Please select a patient before analyzing documents");
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -209,6 +224,21 @@ const UploadDoc: React.FC = () => {
     toast.info(`Removed ${removedFile.name}`);
   };
 
+  const getPatientList = async () => {
+    try {
+      const response = await patientAPI.getPatients();
+      console.log("response :", response);
+      setPatients(response || []);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+      toast.error("Failed to fetch patients");
+    }
+  };
+
+  useEffect(() => {
+    getPatientList();
+  }, []);
+
   return (
     <AppLayout>
       <form onSubmit={handleFormSubmit}>
@@ -249,6 +279,40 @@ const UploadDoc: React.FC = () => {
                 <p className="text-sm text-gray-600">
                   Physician notes, observations, and recommendations
                 </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="col-span-full">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Patient
+                </label>
+                <Select
+                  value={selectedPatient}
+                  onValueChange={(value) => {
+                    setSelectedPatient(value);
+                    const selectedPatientObj = patients.find(
+                      (p) => p.id === value
+                    );
+                    if (selectedPatientObj) {
+                      localStorage.setItem(
+                        "selectedPatient",
+                        JSON.stringify(selectedPatientObj)
+                      );
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a patient" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {patients.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                        {patient.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -354,7 +418,10 @@ const UploadDoc: React.FC = () => {
           </CardContent>
 
           <CardFooter className="flex justify-between items-center">
-            <Button type="submit" disabled={isProcessing || files.length === 0}>
+            <Button
+              type="submit"
+              disabled={isProcessing || files.length === 0 || !selectedPatient}
+            >
               {isProcessing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
