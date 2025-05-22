@@ -11,10 +11,11 @@ export interface Patient {
   address?: string;
   email?: string;
   medical_history?: any;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   last_visit?: string;
   created_at?: string;
   updated_at?: string;
+  medical_report_analysis?: any;
 }
 
 export interface PatientFormData {

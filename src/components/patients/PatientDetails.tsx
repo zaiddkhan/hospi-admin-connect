@@ -47,7 +47,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
   onDelete,
 }) => {
   const navigate = useNavigate();
-
+  console.log("Patient Details: ", patient);
   // Fetch patient appointments
   const {
     data: appointments,
@@ -167,7 +167,9 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
           <TabsList className="mb-4">
             <TabsTrigger value="details">Patient Details</TabsTrigger>
             <TabsTrigger value="appointments">Appointments</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
+            {patient.medical_report_analysis.length > 0 && (
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="details" className="space-y-6">

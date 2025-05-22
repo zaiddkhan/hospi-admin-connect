@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { cleanAnalysisData } from "@/lib/utils";
+import { patientAPI } from "@/services/patientService";
 
 const EmptyState = ({ text = "No data available" }) => (
   <div className="text-sm text-gray-500 italic">{text}</div>
@@ -148,15 +149,26 @@ const DocAnalysis: React.FC<{ patientId: string }> = ({ patientId }) => {
   const [analysisData, setAnalysisData] = useState<any>(null);
 
   useEffect(() => {
-    const rawData = JSON.parse(localStorage.getItem("documentAnalysis"));
-    if (rawData) {
-      const cleanedData = cleanAnalysisData(rawData);
-      setAnalysisData(JSON.parse(cleanedData));
-    }
+    const fetchPatientData = async () => {
+      try {
+        const patientData = await patientAPI.getPatientById(patientId);
+        const rawData = patientData?.medical_report_analysis[0];
 
-    const rawDataPatient = JSON.parse(localStorage.getItem("selectedPatient"));
+        if (rawData) {
+          const cleanedData = cleanAnalysisData(rawData);
+          setAnalysisData(JSON.parse(cleanedData));
+        }
 
-    // post request here
+        const rawDataPatient = JSON.parse(
+          localStorage.getItem("selectedPatient")
+        );
+        // post request here
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      }
+    };
+
+    fetchPatientData();
   }, []);
 
   if (!analysisData) return null;
