@@ -22,8 +22,6 @@ export const extractPDFText = async (
     if (!text) {
       return { error: 1 };
     }
-
-    console.log("text PDF reader:", text);
     return [
       `==== PDF DOCUMENT: ${file.name} ====\n\n${text}\n\n==== END OF ${file.name} ====`,
     ];
@@ -61,15 +59,14 @@ export async function callGeminiAPI(
   temperature = 0.3,
   maxTokens = 400000
 ): Promise<string> {
-  console.log("prompt inside gemini:", prompt);
   try {
     console.log(
       "API",
-      `Calling Google Gemini 2.0 Flash API with ${prompt.length} character prompt`
+      `Calling Google Gemini 2.5 Flash API with ${prompt.length} character prompt`
     );
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyA_EJIr4YJMnBXokQpKYiz4Enceeflp12U`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=AIzaSyA_EJIr4YJMnBXokQpKYiz4Enceeflp12U`,
       {
         contents: [
           {
@@ -129,7 +126,6 @@ export async function callGeminiAPI(
 //   8. Upcoming appointments
 
 //   Format the information in simple, readable sections with appropriate headings. Highlight abnormal values (high/low) where relevant. Only include information that is clearly present in the document - do not make assumptions about missing data.
-  
 
 //   Return a JSON object with the following structure:
 // {
@@ -211,8 +207,7 @@ export async function callGeminiAPI(
 // 7. Format dates as readable strings (e.g., "May 15, 2025")
 // 8. If a field is not present in the given pdf make up the value but make sure you send all of the values given in the JSON in a string
 // 9. Return {the specified json}
-// 10. Do not add anything else do not add delimeter or json or \n in your reply just a single object 
-
+// 10. Do not add anything else do not add delimeter or json or \n in your reply just a single object
 
 //   `;
 // };
@@ -363,7 +358,7 @@ Important guidelines:
 7. Format dates as readable strings (e.g., "May 15, 2025")
 8. If a field is not present in the given document, make up a reasonable value but ensure you include all fields specified in the JSON structure
 9. Return {the specified json}
-10. Do not add anything else - do not add delimiter or json or \\n in your reply - just a single object
+10. Do not add anything else - do not add delimiter or json or \\n in your reply - just a single object, the output should start with { and end with }, and not with code markdowns.
   `;
 };
 
