@@ -155,7 +155,6 @@ const UploadDoc: React.FC = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
     if (files.length === 0) {
       toast.error("Please upload at least one file to analyze");
       return;
@@ -171,7 +170,6 @@ const UploadDoc: React.FC = () => {
     try {
       // Send files for analysis
       const analysisResult = (await extractPDFText(files, comments)) as any;
-      console.log("analysisResult :", analysisResult[0]);
 
       if (analysisResult.error) {
         toast.error("No text content found in the uploaded file");
@@ -179,9 +177,12 @@ const UploadDoc: React.FC = () => {
       }
 
       const finalPrompt = await analyzeDocumentsPrompt(analysisResult[0]);
-      console.log("finalPrompt :", finalPrompt);
 
       const aiResult = await callGeminiAPI(finalPrompt as any);
+      await patientAPI.storePatientMedicalDocument(
+        selectedPatient,
+        aiResult.replace("```json", "").replace("```", "").trim()
+      );
       // Store the analysis result in localStorage
       localStorage.setItem("documentAnalysis", JSON.stringify(aiResult));
 

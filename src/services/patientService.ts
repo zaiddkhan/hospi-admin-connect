@@ -11,10 +11,11 @@ export interface Patient {
   address?: string;
   email?: string;
   medical_history?: any;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   last_visit?: string;
   created_at?: string;
   updated_at?: string;
+  medical_report_analysis?: any;
 }
 
 export interface PatientFormData {
@@ -30,18 +31,21 @@ export interface PatientFormData {
 
 // Patient API functions
 export const patientAPI = {
-  getPatients: async (params?: { search?: string; status?: string }): Promise<Patient[]> => {
+  getPatients: async (params?: {
+    search?: string;
+    status?: string;
+  }): Promise<Patient[]> => {
     try {
-      const response = await api.get('/patients', { params });
-      
+      const response = await api.get("/patients", { params });
+
       // Handle pagination response format
       if (response.data.data && Array.isArray(response.data.data)) {
         return response.data.data;
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error("Error fetching patients:", error);
       throw error;
     }
   },
@@ -58,15 +62,18 @@ export const patientAPI = {
 
   createPatient: async (data: PatientFormData): Promise<Patient> => {
     try {
-      const response = await api.post('/patients', data);
+      const response = await api.post("/patients", data);
       return response.data;
     } catch (error) {
-      console.error('Error creating patient:', error);
+      console.error("Error creating patient:", error);
       throw error;
     }
   },
 
-  updatePatient: async (id: string, data: Partial<PatientFormData>): Promise<Patient> => {
+  updatePatient: async (
+    id: string,
+    data: Partial<PatientFormData>
+  ): Promise<Patient> => {
     try {
       const response = await api.put(`/patients/${id}`, data);
       return response.data;
@@ -85,7 +92,26 @@ export const patientAPI = {
       throw error;
     }
   },
-  
+
+  storePatientMedicalDocument: async (
+    id: string,
+    analysis_report: string
+  ): Promise<{ message: string }> => {
+    try {
+      console.log(`Analysis Report: ${analysis_report}`);
+      const response = await api.post(`/patients/store-report/${id}`, {
+        analysis_report: analysis_report,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Error storing patient medical document ${id}:`,
+        error.message
+      );
+      throw error;
+    }
+  },
+
   // Get patient appointments
   getPatientAppointments: async (id: string): Promise<any[]> => {
     try {
@@ -96,7 +122,7 @@ export const patientAPI = {
       throw error;
     }
   },
-  
+
   // Get patient medical records
   getPatientMedicalRecords: async (id: string): Promise<any[]> => {
     try {
@@ -107,7 +133,7 @@ export const patientAPI = {
       throw error;
     }
   },
-  
+
   // Get patient invoices
   getPatientInvoices: async (id: string): Promise<any[]> => {
     try {
@@ -117,5 +143,5 @@ export const patientAPI = {
       console.error(`Error fetching invoices for patient ${id}:`, error);
       throw error;
     }
-  }
+  },
 };
