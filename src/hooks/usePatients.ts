@@ -4,9 +4,20 @@ import { patientAPI, PatientFormData, Patient } from '@/services/patientService'
 import { toast } from 'sonner';
 
 // Hook to fetch all patients with optional filtering
-export const usePatients = (params?: { search?: string; status?: string }) => {
+export const usePatients = (params?: {
+  search?: string;
+  status?: string;
+  doctor_id?: number;
+}) => {
+  if (!params) {
+    params.doctor_id = 3;
+  } else {
+    params = {
+      doctor_id: 3,
+    };
+  }
   return useQuery({
-    queryKey: ['patients', params],
+    queryKey: ["patients", params],
     queryFn: () => patientAPI.getPatients(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
