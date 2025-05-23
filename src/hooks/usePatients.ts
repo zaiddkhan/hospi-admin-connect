@@ -9,7 +9,7 @@ export const usePatients = (params?: {
   status?: string;
   doctor_id?: number;
 }) => {
-  if (!params) {
+  if (params) {
     params.doctor_id = 3;
   } else {
     params = {
